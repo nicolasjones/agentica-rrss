@@ -1,0 +1,119 @@
+services:
+  # PostgreSQL with pgvector
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: agenmatica_db
+    environment:
+      POSTGRES_USER: agenmatica
+      POSTGRES_PASSWORD: agenmatica
+      POSTGRES_DB: agenmatica
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agenmatica"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis (cache + celery results)
+  redis:
+    image: redis:7-alpine
+    container_name: agenmatica_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # RabbitMQ (celery broker)
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: agenmatica_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"  # Management UI
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: agenmatica_api
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://agenmatica:agenmatica@db:5432/agenmatica
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/app:/app/app
+
+  # Celery Worker
+  worker:
+    build:
+      context: ./backend
+    container_name: agenmatica_worker
+    command: celery -A app.core.celery_app worker --loglevel=info
+    depends_on:
+      - db
+      - redis
+      - rabbitmq
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://agenmatica:agenmatica@db:5432/agenmatica
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+    volumes:
+      - ./backend/app:/app/app
+
+  # Celery Beat (Scheduler)
+  beat:
+    build:
+      context: ./backend
+    container_name: agenmatica_beat
+    command: celery -A app.core.celery_app beat --loglevel=info
+    depends_on:
+      - db
+      - redis
+      - rabbitmq
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://agenmatica:agenmatica@db:5432/agenmatica
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+    volumes:
+      - ./backend/app:/app/app
+
+  # Frontend (Vite)
+  frontend:
+    build:
+      context: ./frontend
+    container_name: agenmatica_frontend
+    ports:
+      - "8090:80"
+    environment:
+      - VITE_API_URL=http://localhost:8000/api/v1
+    depends_on:
+      - backend-api
+    volumes:
+      - ./frontend/src:/app/src
+
+volumes:
+  pgdata:

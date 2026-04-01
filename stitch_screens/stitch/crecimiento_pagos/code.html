@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AGENMATICA | Growth &amp; Payments</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;800;900&amp;family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@400;500;700&amp;family=Anton&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-high": "#201f21",
+                        "primary": "#cc97ff",
+                        "on-secondary-fixed": "#004a1d",
+                        "secondary-container": "#006e2f",
+                        "on-error-container": "#ffb2b9",
+                        "on-primary-fixed": "#000000",
+                        "surface-variant": "#262627",
+                        "secondary-fixed": "#6bff8f",
+                        "on-tertiary-fixed-variant": "#6c6d6d",
+                        "error-dim": "#d73357",
+                        "on-secondary-container": "#e4ffe2",
+                        "inverse-on-surface": "#565556",
+                        "surface-tint": "#cc97ff",
+                        "secondary": "#6bff8f",
+                        "on-secondary": "#005f28",
+                        "inverse-surface": "#fcf8f9",
+                        "secondary-fixed-dim": "#5bf083",
+                        "error-container": "#a70138",
+                        "on-secondary-fixed-variant": "#006a2d",
+                        "outline-variant": "#484849",
+                        "surface-container-highest": "#262627",
+                        "on-surface-variant": "#adaaab",
+                        "tertiary-dim": "#cecfce",
+                        "inverse-primary": "#842cd3",
+                        "tertiary": "#f9f9f8",
+                        "tertiary-container": "#ebebea",
+                        "surface": "#0e0e0f",
+                        "on-tertiary": "#5e5f5f",
+                        "on-error": "#490013",
+                        "outline": "#767576",
+                        "primary-dim": "#9c48ea",
+                        "on-primary": "#47007c",
+                        "tertiary-fixed": "#ffffff",
+                        "surface-bright": "#2c2c2d",
+                        "on-background": "#ffffff",
+                        "error": "#ff6e84",
+                        "on-primary-container": "#360061",
+                        "surface-dim": "#0e0e0f",
+                        "tertiary-fixed-dim": "#f1f1f0",
+                        "surface-container-lowest": "#000000",
+                        "on-tertiary-container": "#555757",
+                        "primary-fixed-dim": "#b971ff",
+                        "on-primary-fixed-variant": "#430076",
+                        "secondary-dim": "#5bf083",
+                        "surface-container-low": "#131314",
+                        "primary-container": "#c284ff",
+                        "surface-container": "#1a191b",
+                        "background": "#0e0e0f",
+                        "primary-fixed": "#c284ff",
+                        "on-surface": "#ffffff",
+                        "on-tertiary-fixed": "#4f5050"
+                    },
+                    fontFamily: {
+                        "headline": ["Epilogue"],
+                        "body": ["Inter"],
+                        "label": ["Space Grotesk"],
+                        "numeric": ["Anton"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-noise {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.08;
+        }
+        .asymmetric-clip {
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 95% 100%, 0 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface selection:bg-primary selection:text-on-primary">
+<!-- Background Noise Overlay -->
+<div class="fixed inset-0 pointer-events-none bg-noise z-0"></div>
+<!-- SideNavBar (from JSON) -->
+<aside class="fixed left-0 top-0 h-full flex flex-col items-center py-6 z-50 bg-[#131314] dark:bg-zinc-900 h-full w-20 border-r border-zinc-800/20 bg-zinc-900 shadow-[4px_0px_20px_rgba(0,0,0,0.5)]">
+<div class="mb-12 text-xl font-black italic text-[#cc97ff] dark:text-purple-400 tracking-tighter">AGENMATICA</div>
+<nav class="flex flex-col gap-8 flex-1 items-center">
+<!-- Active Tab: Billing (Matches Payments Intent) -->
+<div class="flex flex-col items-center gap-1 group cursor-pointer text-[#6bff8f] dark:text-green-400 scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="credit_card">credit_card</span>
+<span class="font-['Epilogue'] tracking-tighter uppercase font-bold text-[10px]">Billing</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer text-zinc-500 dark:text-zinc-500 hover:text-white transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="sell">sell</span>
+<span class="font-['Epilogue'] tracking-tighter uppercase font-bold text-[10px]">Pick</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer text-zinc-500 dark:text-zinc-500 hover:text-white transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="speaker">speaker</span>
+<span class="font-['Epilogue'] tracking-tighter uppercase font-bold text-[10px]">Speaker</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer text-zinc-500 dark:text-zinc-500 hover:text-white transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="settings_input_component">settings_input_component</span>
+<span class="font-['Epilogue'] tracking-tighter uppercase font-bold text-[10px]">Circuit</span>
+</div>
+<div class="flex flex-col items-center gap-1 group cursor-pointer text-zinc-500 dark:text-zinc-500 hover:text-white transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-['Epilogue'] tracking-tighter uppercase font-bold text-[10px]">Brain</span>
+</div>
+</nav>
+<div class="mt-auto">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant/20 overflow-hidden">
+<img alt="Band Logo" class="w-full h-full object-cover" data-alt="close-up of a vintage electric guitar headstock with a stylized neon purple band logo badge" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4PAE1iYqiOtSq5YtUWT0Mo5AEO_okOx9ZYPTeENy1deCtwC3vZx9FYZd1mNhz4tJU4_-gfEUI35VSGM0PV0wtyJM6gRxMWC_3Zhcrm3rmHjj-w8DbMFzs8JT8ssEkSNPCZjqkyP66KCbVavh1zCO-ni8IifdJag7mu-9l8ZynAK3z1yszpwnQPBpVJgll5AttlWPCe288LkVLF0xnjPiL4hO3i_v3SqwsWezM8s0MV0qFAjg43uPJ3TOXLfie-NgZWkxK8qzX87Q"/>
+</div>
+</div>
+</aside>
+<!-- TopAppBar (from JSON) -->
+<header class="fixed top-0 right-0 left-20 h-16 flex justify-between items-center px-8 z-40 bg-[#0e0e0f]/80 dark:bg-black/80 backdrop-blur-xl border-b border-zinc-800/10">
+<div class="flex items-center gap-4">
+<h1 class="text-2xl font-black text-[#f9f9f8] dark:text-white uppercase font-headline tracking-tighter">FINANCIAL SYNC</h1>
+<div class="px-2 py-0.5 bg-secondary/10 text-secondary text-[10px] font-label font-bold tracking-widest rounded-sm border border-secondary/20">LIVE_TRACKING</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden lg:block">
+<input class="bg-surface-container-low border-none text-xs font-label tracking-widest px-4 py-2 w-64 focus:ring-1 focus:ring-secondary/50 placeholder:text-outline/50" placeholder="SEARCH SYSTEM..." type="text"/>
+<span class="absolute right-3 top-2 text-outline material-symbols-outlined text-sm" data-icon="search">search</span>
+</div>
+<div class="flex items-center gap-4 text-zinc-400">
+<button class="hover:bg-zinc-800/40 p-2 rounded-sm transition-all"><span class="material-symbols-outlined" data-icon="sensors">sensors</span></button>
+<button class="hover:bg-zinc-800/40 p-2 rounded-sm transition-all"><span class="material-symbols-outlined" data-icon="bolt">bolt</span></button>
+<button class="hover:bg-zinc-800/40 p-2 rounded-sm transition-all"><span class="material-symbols-outlined" data-icon="account_circle">account_circle</span></button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-20 mt-16 p-8 relative z-10">
+<!-- Hero: Bento Style -->
+<section class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12">
+<!-- Primary Revenue Hero -->
+<div class="md:col-span-2 bg-surface-container-low p-8 relative overflow-hidden flex flex-col justify-between min-h-[320px] asymmetric-clip">
+<div class="relative z-20">
+<p class="font-label text-secondary tracking-[0.3em] text-xs font-bold mb-2">QUARTERLY_REVENUE</p>
+<h2 class="font-numeric text-8xl text-white leading-none">$142.8K</h2>
+<p class="font-body text-on-surface-variant text-sm mt-4 max-w-xs">Aggregated income from touring, merch, and streaming royalties. 12% above tour forecast.</p>
+</div>
+<div class="relative z-20 mt-8 flex gap-4">
+<button class="bg-primary text-on-primary px-6 py-3 font-headline font-bold text-sm tracking-tighter uppercase rounded-sm hover:scale-[0.98] transition-transform">Withdraw Funds</button>
+<button class="border border-outline-variant/30 text-tertiary px-6 py-3 font-headline font-bold text-sm tracking-tighter uppercase rounded-sm hover:bg-surface-container-high transition-colors">Export Rider</button>
+</div>
+<!-- Decorative Graphic -->
+<div class="absolute right-0 bottom-0 w-1/2 h-full opacity-30 pointer-events-none">
+<div class="w-full h-full bg-gradient-to-tl from-primary/40 to-transparent"></div>
+</div>
+<div class="absolute -right-10 -bottom-10 opacity-10">
+<span class="material-symbols-outlined text-[200px]" data-icon="payments">payments</span>
+</div>
+</div>
+<!-- Fan Growth Bento -->
+<div class="bg-surface-container-high p-6 flex flex-col justify-between border-l border-primary/20">
+<div>
+<span class="material-symbols-outlined text-primary mb-4" data-icon="groups">groups</span>
+<h3 class="font-headline font-bold text-xl text-white tracking-tighter">TOTAL_FANS</h3>
+<div class="font-numeric text-5xl text-tertiary mt-2">84.2K</div>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant/10">
+<div class="flex items-center gap-2 text-secondary text-xs font-label">
+<span class="material-symbols-outlined text-xs" data-icon="trending_up">trending_up</span>
+<span>+1.4K THIS WEEK</span>
+</div>
+</div>
+</div>
+<!-- Conversion Bento -->
+<div class="bg-surface-container-highest p-6 flex flex-col justify-between">
+<div>
+<span class="material-symbols-outlined text-secondary mb-4" data-icon="ads_click">ads_click</span>
+<h3 class="font-headline font-bold text-xl text-white tracking-tighter">CONV_RATE</h3>
+<div class="font-numeric text-5xl text-tertiary mt-2">14.2%</div>
+</div>
+<p class="text-[10px] font-label text-on-surface-variant tracking-widest mt-4">TICKET_SALES / IMPRESSIONS</p>
+</div>
+</section>
+<!-- Analytics Deep-Dive: Neon Graphs -->
+<section class="mb-12">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="font-headline font-black text-3xl tracking-tighter text-white">GROWTH_OSCILLATION</h2>
+<p class="font-label text-outline text-xs tracking-widest">REAL-TIME SIGNAL ANALYSIS ACROSS PLATFORMS</p>
+</div>
+<div class="flex gap-2">
+<span class="h-2 w-8 bg-primary rounded-full"></span>
+<span class="h-2 w-8 bg-secondary rounded-full"></span>
+<span class="h-2 w-8 bg-outline-variant rounded-full"></span>
+</div>
+</div>
+<div class="bg-surface-container-low p-1 border border-outline-variant/5">
+<div class="h-80 w-full bg-surface-container-highest flex items-end justify-between px-8 py-4 relative group">
+<!-- Fake Line Chart with SVG Paths -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none px-8 py-4" preserveaspectratio="none" viewbox="0 0 100 100">
+<path d="M0 80 Q 20 20, 40 60 T 80 10 T 100 40" fill="none" stroke="#cc97ff" stroke-linecap="round" stroke-width="2"></path>
+<path d="M0 90 Q 25 70, 50 85 T 75 40 T 100 10" fill="none" stroke="#6bff8f" stroke-dasharray="4 2" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+<!-- Grid Lines -->
+<div class="absolute inset-0 grid grid-cols-6 grid-rows-4 opacity-5 pointer-events-none">
+<div class="border-r border-b border-white"></div><div class="border-r border-b border-white"></div><div class="border-r border-b border-white"></div><div class="border-r border-b border-white"></div><div class="border-r border-b border-white"></div><div class="border-b border-white"></div>
+<div class="border-r border-b border-white"></div><div class="border-r border-b border-white"></div><div class="border-r border-b border-white"></div><div class="border-r border-b border-white"></div><div class="border-r border-b border-white"></div><div class="border-b border-white"></div>
+<div class="border-r border-b border-white"></div><div class="border-r border-b border-white"></div><div class="border-r border-b border-white"></div><div class="border-r border-b border-white"></div><div class="border-r border-b border-white"></div><div class="border-b border-white"></div>
+<div class="border-r border-white"></div><div class="border-r border-white"></div><div class="border-r border-white"></div><div class="border-r border-white"></div><div class="border-r border-white"></div><div></div>
+</div>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+<!-- Subscription Management: Pedal Board Style -->
+<div class="lg:col-span-2">
+<h3 class="font-headline font-bold text-xl text-white tracking-tighter mb-6 uppercase">Current Rider Plan</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Garage Plan -->
+<div class="bg-surface-container border border-outline-variant/10 p-8 hover:border-outline-variant transition-colors relative">
+<div class="absolute top-4 right-4 text-[10px] font-label text-outline">v1.2</div>
+<h4 class="font-headline font-black text-2xl text-tertiary-dim mb-1">GARAGE</h4>
+<p class="text-xs font-label text-outline mb-6">STARTER_NODE</p>
+<div class="font-numeric text-4xl text-white mb-8">$0<span class="text-sm font-body text-outline">/mo</span></div>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-2 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="check">check</span> 500 Fan Limit
+                            </li>
+<li class="flex items-center gap-2 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="check">check</span> Basic Analytics
+                            </li>
+</ul>
+<button class="w-full border border-outline-variant/30 py-3 text-xs font-label font-bold tracking-[0.2em] hover:bg-surface-container-high transition-colors">DOWNGRADE</button>
+</div>
+<!-- Pro Tour Plan -->
+<div class="bg-surface-container-high border-2 border-secondary p-8 shadow-[0_0_30px_rgba(107,255,143,0.15)] relative">
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-secondary text-on-secondary px-3 py-1 text-[10px] font-label font-black tracking-widest">ACTIVE_CIRCUIT</div>
+<h4 class="font-headline font-black text-2xl text-white mb-1">PRO TOUR</h4>
+<p class="text-xs font-label text-secondary mb-6">ENTERPRISE_NODE</p>
+<div class="font-numeric text-4xl text-secondary mb-8">$89<span class="text-sm font-body text-white/50">/mo</span></div>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-2 text-sm text-white">
+<span class="material-symbols-outlined text-sm text-secondary" data-icon="check">check</span> Unlimited Fans
+                            </li>
+<li class="flex items-center gap-2 text-sm text-white">
+<span class="material-symbols-outlined text-sm text-secondary" data-icon="check">check</span> AI Agent Automation
+                            </li>
+<li class="flex items-center gap-2 text-sm text-white">
+<span class="material-symbols-outlined text-sm text-secondary" data-icon="check">check</span> Custom Merch Nodes
+                            </li>
+</ul>
+<button class="w-full bg-secondary text-on-secondary py-3 text-xs font-label font-bold tracking-[0.2em] hover:scale-[0.98] transition-transform">MANAGE PLAN</button>
+</div>
+</div>
+<!-- Team Management -->
+<div class="mt-12">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline font-bold text-xl text-white tracking-tighter uppercase">Team &amp; Crew</h3>
+<button class="flex items-center gap-2 text-primary font-label text-xs font-bold tracking-widest hover:underline">
+<span class="material-symbols-outlined text-sm" data-icon="person_add">person_add</span> ADD_OPERATIVE
+                        </button>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-4 bg-surface-container-low border border-outline-variant/5">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-zinc-800 flex items-center justify-center font-numeric text-primary">01</div>
+<div>
+<p class="font-headline font-bold text-sm text-white">MARCUS_DRUMS</p>
+<p class="text-[10px] font-label text-outline tracking-widest uppercase">Admin / Percussion</p>
+</div>
+</div>
+<div class="text-xs font-label text-secondary px-3 py-1 border border-secondary/20 bg-secondary/5">FULL_ACCESS</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container-low border border-outline-variant/5">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-zinc-800 flex items-center justify-center font-numeric text-outline">02</div>
+<div>
+<p class="font-headline font-bold text-sm text-white">LENA_CAM</p>
+<p class="text-[10px] font-label text-outline tracking-widest uppercase">Visualist / Media</p>
+</div>
+</div>
+<div class="text-xs font-label text-outline px-3 py-1 border border-outline-variant/20 bg-surface-container-high">VIEW_ONLY</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Payment Integration: Mercado Pago Branded Area -->
+<div class="lg:col-span-1">
+<div class="sticky top-24">
+<div class="bg-surface-container-high p-8 border-t-4 border-primary">
+<h3 class="font-headline font-black text-2xl text-white tracking-tighter mb-8 uppercase">Payment Node</h3>
+<div class="bg-[#009ee3]/10 p-6 border border-[#009ee3]/20 mb-8 flex flex-col items-center text-center">
+<img alt="Mercado Pago Logo Placeholder" class="h-10 mb-4 opacity-80 grayscale brightness-200" data-alt="minimal blue and white financial services logo on a clean dark tech background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgqvk7XiI-WLJ5LGJ1D5Rrxp06uuRq6KLFxl1BdCer3r2liwEVtiJDs3_I-3wj1JCaOBGJX1DrZyM3a0M-kWAPcv1TtkCMd2SDNvnlhZiKeIBFyxcQD4cSBGjHVuDcyWS8uGywpt6MMYLhR8lF3lRfekauI9hblc4LZXYryaQnyOp4k09YXxMi29RbATqEQ_wDHsChhci_QC_eveTEYKkal0Ym85AuBNIpB1iK3y1b1r5KYuOxnXfMZzMRk-r4a4H9y866OFDaWtI"/>
+<p class="text-[10px] font-label text-on-surface-variant tracking-[0.2em] mb-4">POWERED_BY_MERCADOPAGO</p>
+<p class="text-sm text-tertiary-dim">Your subscription is securely processed via our Latin American payment partner.</p>
+</div>
+<div class="space-y-6">
+<div class="flex justify-between items-center text-xs font-label tracking-widest">
+<span class="text-outline">NEXT_BILLING:</span>
+<span class="text-white">OCT_12_2023</span>
+</div>
+<div class="flex justify-between items-center text-xs font-label tracking-widest">
+<span class="text-outline">CARD_SYNC:</span>
+<span class="text-white">VISA_****_8821</span>
+</div>
+<div class="flex justify-between items-center text-xs font-label tracking-widest">
+<span class="text-outline">STATUS:</span>
+<span class="text-secondary font-bold">OPERATIONAL</span>
+</div>
+</div>
+<div class="mt-8 pt-8 border-t border-outline-variant/10">
+<button class="w-full bg-[#009ee3] text-white py-4 font-headline font-black italic tracking-tighter uppercase hover:bg-[#007fb9] transition-colors mb-4">
+                                Update Billing
+                            </button>
+<button class="w-full border border-outline-variant/30 text-outline py-3 text-[10px] font-label font-bold tracking-[0.3em] hover:text-white transition-colors">
+                                VIEW_INVOICE_HISTORY
+                            </button>
+</div>
+</div>
+<!-- Safety/Legal Text -->
+<div class="mt-6 px-4">
+<p class="text-[9px] font-label text-outline/50 leading-relaxed uppercase tracking-tighter">
+                            AGENMATICA LLC. SYSTEM ENCRYPTION ACTIVE. ALL PAYMENTS ARE SUBJECT TO TERMS OF SERVICE 2.4B. NO REFUNDS ONCE SIGNAL IS DEPLOYED.
+                        </p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- FAB Suppression: This is a billing/settings screen, so FAB is suppressed per the Shell Visibility rules -->
+</body></html>

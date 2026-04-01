@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AGENMATICA - The Brain</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@700;800;900&amp;family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-high": "#201f21",
+              "primary": "#cc97ff",
+              "on-secondary-fixed": "#004a1d",
+              "secondary-container": "#006e2f",
+              "on-error-container": "#ffb2b9",
+              "on-primary-fixed": "#000000",
+              "surface-variant": "#262627",
+              "secondary-fixed": "#6bff8f",
+              "on-tertiary-fixed-variant": "#6c6d6d",
+              "error-dim": "#d73357",
+              "on-secondary-container": "#e4ffe2",
+              "inverse-on-surface": "#565556",
+              "surface-tint": "#cc97ff",
+              "secondary": "#6bff8f",
+              "on-secondary": "#005f28",
+              "inverse-surface": "#fcf8f9",
+              "secondary-fixed-dim": "#5bf083",
+              "error-container": "#a70138",
+              "on-secondary-fixed-variant": "#006a2d",
+              "outline-variant": "#484849",
+              "surface-container-highest": "#262627",
+              "on-surface-variant": "#adaaab",
+              "tertiary-dim": "#cecfce",
+              "inverse-primary": "#842cd3",
+              "tertiary": "#f9f9f8",
+              "tertiary-container": "#ebebea",
+              "surface": "#0e0e0f",
+              "on-tertiary": "#5e5f5f",
+              "on-error": "#490013",
+              "outline": "#767576",
+              "primary-dim": "#9c48ea",
+              "on-primary": "#47007c",
+              "tertiary-fixed": "#ffffff",
+              "surface-bright": "#2c2c2d",
+              "on-background": "#ffffff",
+              "error": "#ff6e84",
+              "on-primary-container": "#360061",
+              "surface-dim": "#0e0e0f",
+              "tertiary-fixed-dim": "#f1f1f0",
+              "surface-container-lowest": "#000000",
+              "on-tertiary-container": "#555757",
+              "primary-fixed-dim": "#b971ff",
+              "on-primary-fixed-variant": "#430076",
+              "secondary-dim": "#5bf083",
+              "surface-container-low": "#131314",
+              "primary-container": "#c284ff",
+              "surface-container": "#1a191b",
+              "background": "#0e0e0f",
+              "primary-fixed": "#c284ff",
+              "on-surface": "#ffffff",
+              "on-tertiary-fixed": "#4f5050"
+            },
+            fontFamily: {
+              "headline": ["Epilogue"],
+              "body": ["Inter"],
+              "label": ["Space Grotesk"],
+              "mono": ["JetBrains Mono"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>body {
+    background-color: #0e0e0f;
+    background-image: radial-gradient(circle at 2px 2px, rgba(72, 72, 73, 0.05) 1px, transparent 0);
+    background-size: 32px 32px
+    }
+.circuit-line {
+    position: absolute;
+    background: rgba(107, 255, 143, 0.05)
+    }
+.grain-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.03;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuANntPFBN9zCe7Tt5rYc8KlqetPhyIp77_Hv1dmiGIs2JScO5za2hxWZJG1yXdFEYB4ZjzuXGtP9dvQ3EdZat5PXJexIEDzrud3Gln4EFIVmGwrKg8WWNUtjNNSI0XbI3B8y0Q0juu_xBe1jjjlEXqaC58AxKWF5EnKpEZW0p6kJBTOctad_834aHV5TI7DUwYHN2RaN2OXmlih69XkNMsHUG3eGS-sqSf2s-ld2BAZ8c6ifGOJD9rcmoQ4r68Tf_8XskA4noMC4J0)
+    }
+.glass-panel {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px)
+    }
+.text-glow-secondary {
+    text-shadow: 0 0 10px rgba(107, 255, 143, 0.4)
+    }</style>
+</head>
+<body class="font-body text-on-surface selection:bg-secondary selection:text-on-secondary">
+<div class="grain-overlay"></div>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full flex flex-col items-center py-6 z-50 bg-[#131314] dark:bg-zinc-900 h-full w-20 border-r border-zinc-800/20 bg-zinc-900 shadow-[4px_0px_20px_rgba(0,0,0,0.5)]">
+<div class="mb-12">
+<span class="text-xl font-black italic text-[#cc97ff] dark:text-purple-400 tracking-tighter">A</span>
+</div>
+<nav class="flex flex-col gap-8 flex-1">
+<a class="flex flex-col items-center gap-1 text-zinc-500 dark:text-zinc-500 hover:text-white transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">sell</span>
+<span class="font-['Epilogue'] tracking-tighter uppercase font-bold text-[10px]">Pick</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-zinc-500 dark:text-zinc-500 hover:text-white transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">speaker</span>
+<span class="font-['Epilogue'] tracking-tighter uppercase font-bold text-[10px]">Speaker</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-zinc-500 dark:text-zinc-500 hover:text-white transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings_input_component</span>
+<span class="font-['Epilogue'] tracking-tighter uppercase font-bold text-[10px]">Circuit</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-[#6bff8f] dark:text-green-400 scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span class="font-['Epilogue'] tracking-tighter uppercase font-bold text-[10px]">Brain</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-zinc-500 dark:text-zinc-500 hover:text-white transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">credit_card</span>
+<span class="font-['Epilogue'] tracking-tighter uppercase font-bold text-[10px]">Billing</span>
+</a>
+</nav>
+<div class="mt-auto">
+<div class="w-10 h-10 bg-surface-container-high rounded-full border border-outline-variant/20 overflow-hidden">
+<img alt="Band Logo" data-alt="close-up of a vintage neon band logo on a dark wall with dramatic shadows and purple light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9U7RvL5jqEgXk87MqiTDilt3hqcoGgQ9Vd5MKynIL7Xewd3DKWmXto7JY0otGbuM5n_q5yXrp2UuZLj8sFyyDNz4G2cyjDc4g6uKfuX2Oq9aEt-WtnUAJ9I0fWM0tzx0Q72ESXcgsLssBck9ey6Cl9qIK7BxanJCG8Q1JpsMAQ7BMREjwnD8YRr6hUn1NondZdSjDb3RrJjw7woZbOefXUaqDvI-xacZUxfZwrFKhY_ARsKNPB0PcBwixgwcDzXkJ0M3g2E1cSVA"/>
+</div>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-20 h-16 flex justify-between items-center px-8 z-40 bg-[#0e0e0f]/80 dark:bg-black/80 backdrop-blur-xl border-b border-zinc-800/10">
+<div class="flex items-center gap-4">
+<span class="text-2xl font-black text-[#f9f9f8] dark:text-white uppercase tracking-tighter">AGENMATICA</span>
+<span class="font-['Space_Grotesk'] font-medium text-[10px] tracking-[0.2em] text-[#6bff8f] bg-secondary/10 px-2 py-0.5 rounded-sm">AI SYNCED: 98.4%</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-zinc-400 hover:text-primary transition-colors cursor-pointer">sensors</span>
+<span class="material-symbols-outlined text-zinc-400 hover:text-primary transition-colors cursor-pointer">bolt</span>
+<span class="material-symbols-outlined text-zinc-400 hover:text-primary transition-colors cursor-pointer">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-20 mt-16 p-8 min-h-screen">
+<div class="max-w-7xl mx-auto space-y-12">
+<!-- Hero: THE BRAIN -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-surface-container-low p-10 rounded-lg relative overflow-hidden">
+<div class="lg:col-span-7 space-y-6 z-10">
+<div class="inline-block py-1 px-3 border border-secondary/30 bg-secondary/5 rounded-sm">
+<span class="font-mono text-xs text-secondary tracking-widest uppercase">Central Intelligence Unit</span>
+</div>
+<h1 class="font-headline text-7xl md:text-8xl font-black tracking-tighter leading-none text-tertiary">
+                        THE <br/><span class="text-primary italic">BRAIN</span>
+</h1>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 px-3 py-1.5 bg-surface-container-highest rounded-sm border border-outline-variant/10">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-mono text-sm font-bold text-secondary text-glow-secondary uppercase">LIVE CONTEXT: 100% Active</span>
+</div>
+<p class="font-label text-on-surface-variant text-sm max-w-xs">AI strategy engine synchronizing tour data, social sentiment, and creative intent.</p>
+</div>
+</div>
+<div class="lg:col-span-5 relative flex justify-center items-center">
+<!-- Pulsating Core Visual -->
+<div class="relative w-64 h-64 md:w-80 md:h-80">
+<div class="absolute inset-0 bg-primary/20 rounded-full blur-[100px]"></div>
+<div class="absolute inset-4 border-[1px] border-primary/40 rounded-full animate-[spin_10s_linear_infinite]"></div>
+<div class="absolute inset-8 border-[2px] border-secondary/30 rounded-full animate-[spin_15s_linear_infinite_reverse]"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-32 h-32 bg-surface-container-highest rounded-full flex items-center justify-center border-2 border-primary shadow-[0_0_40px_rgba(204,151,255,0.4)]">
+<span class="material-symbols-outlined text-6xl text-primary" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+</div>
+<!-- Floating Data Nodes -->
+<div class="absolute top-0 right-0 bg-surface-container-high px-2 py-1 border border-outline-variant/20 rounded-sm font-mono text-[10px] text-primary">STRAT_ALPHA_V4</div>
+<div class="absolute bottom-10 left-0 bg-surface-container-high px-2 py-1 border border-outline-variant/20 rounded-sm font-mono text-[10px] text-secondary">SYNC_STABLE</div>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Live Context Input (The Input Jack) -->
+<div class="lg:col-span-1 flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h2 class="font-headline text-xl font-bold uppercase tracking-tight text-tertiary">The Input Jack</h2>
+<span class="font-mono text-[10px] text-on-surface-variant">VULNERABILITY: LOW</span>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg border-t-2 border-primary space-y-4">
+<label class="font-label text-xs font-bold text-on-surface-variant uppercase tracking-widest block">FEED RAW CONTEXT</label>
+<textarea class="w-full h-64 bg-surface-container-highest border-none focus:ring-1 focus:ring-secondary text-tertiary font-mono text-sm p-4 resize-none placeholder:text-outline/40" placeholder="Type here: 'Just finished rehearsal for Berlin. Sound is darker than usual. Feeling the industrial vibe...'"></textarea>
+<button class="w-full py-3 bg-secondary text-on-secondary font-headline font-bold uppercase text-sm tracking-widest hover:bg-secondary-dim transition-colors flex items-center justify-center gap-2 group">
+<span>Inject Intelligence</span>
+<span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">bolt</span>
+</button>
+</div>
+</div>
+<!-- Campaign Planner (The Master Track) -->
+<div class="lg:col-span-2 flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h2 class="font-headline text-xl font-bold uppercase tracking-tight text-tertiary">The Master Track</h2>
+<div class="flex gap-4">
+<span class="flex items-center gap-2 font-mono text-[10px]"><span class="w-2 h-2 bg-primary"></span> TOUR HYPE</span>
+<span class="flex items-center gap-2 font-mono text-[10px]"><span class="w-2 h-2 bg-secondary"></span> NEW SINGLE</span>
+<span class="flex items-center gap-2 font-mono text-[10px]"><span class="w-2 h-2 bg-error"></span> FAN ENGAGE</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg border-t-2 border-outline-variant/20 overflow-x-auto">
+<div class="min-w-[800px] space-y-6">
+<!-- Timeline Headers -->
+<div class="grid grid-cols-7 gap-4 border-b border-outline-variant/10 pb-4">
+<div class="font-mono text-[10px] text-on-surface-variant">MON 12</div>
+<div class="font-mono text-[10px] text-on-surface-variant">TUE 13</div>
+<div class="font-mono text-[10px] text-on-surface-variant">WED 14</div>
+<div class="font-mono text-[10px] text-on-surface-variant text-secondary">THU 15 (TODAY)</div>
+<div class="font-mono text-[10px] text-on-surface-variant">FRI 16</div>
+<div class="font-mono text-[10px] text-on-surface-variant">SAT 17</div>
+<div class="font-mono text-[10px] text-on-surface-variant">SUN 18</div>
+</div>
+<!-- Timeline Tracks -->
+<div class="space-y-4">
+<!-- Track 1 -->
+<div class="grid grid-cols-7 gap-4 items-center">
+<div class="col-span-3 bg-primary/20 border-l-4 border-primary p-3 rounded-sm">
+<p class="font-label text-xs font-bold text-primary">EU TOUR ANNOUNCEMENT</p>
+<p class="font-mono text-[9px] text-on-surface-variant">PHASE: REVEAL</p>
+</div>
+<div class="col-span-4 bg-surface-container-highest/40 h-1 rounded-full"></div>
+</div>
+<!-- Track 2 -->
+<div class="grid grid-cols-7 gap-4 items-center">
+<div class="col-span-2"></div>
+<div class="col-span-4 bg-secondary/20 border-l-4 border-secondary p-3 rounded-sm">
+<p class="font-label text-xs font-bold text-secondary">"OBSIDIAN" SINGLE DROP</p>
+<p class="font-mono text-[9px] text-on-surface-variant">STATUS: OPTIMIZING</p>
+</div>
+<div class="col-span-1"></div>
+</div>
+<!-- Track 3 -->
+<div class="grid grid-cols-7 gap-4 items-center">
+<div class="col-span-4"></div>
+<div class="col-span-3 bg-error/20 border-l-4 border-error p-3 rounded-sm">
+<p class="font-label text-xs font-bold text-error">BACKSTAGE Q&amp;A LIVE</p>
+<p class="font-mono text-[9px] text-on-surface-variant">ENGAGEMENT TARGET: 12%</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Strategy alignment Visualization & Goal Setting -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Alignment Visualization -->
+<div class="bg-surface-container-low p-8 rounded-lg relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4">
+<span class="material-symbols-outlined text-primary/20 text-6xl group-hover:scale-110 transition-transform">analytics</span>
+</div>
+<h3 class="font-headline text-lg font-bold text-tertiary mb-6 uppercase italic">Strategic Alignment</h3>
+<div class="space-y-8">
+<div class="relative h-32 flex items-end justify-between gap-2 border-b border-outline-variant/30 px-4">
+<div class="w-8 bg-primary/30 h-[40%] rounded-t-sm"></div>
+<div class="w-8 bg-primary/50 h-[65%] rounded-t-sm"></div>
+<div class="w-8 bg-primary h-[90%] rounded-t-sm relative">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 font-mono text-[9px] text-primary">PEAK</div>
+</div>
+<div class="w-8 bg-primary/70 h-[75%] rounded-t-sm"></div>
+<div class="w-8 bg-primary/40 h-[50%] rounded-t-sm"></div>
+<div class="w-8 bg-primary/20 h-[30%] rounded-t-sm"></div>
+<div class="w-8 bg-primary/60 h-[80%] rounded-t-sm"></div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-highest p-4 rounded-sm">
+<p class="font-mono text-[10px] text-on-surface-variant uppercase">Reach Growth</p>
+<p class="font-headline text-2xl font-black text-secondary">+24.8%</p>
+</div>
+<div class="bg-surface-container-highest p-4 rounded-sm">
+<p class="font-mono text-[10px] text-on-surface-variant uppercase">Sentiment Shift</p>
+<p class="font-headline text-2xl font-black text-primary">GRUNGE+</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Goal Setting: AI Aggressiveness -->
+<div class="bg-surface-container-low p-8 rounded-lg">
+<h3 class="font-headline text-lg font-bold text-tertiary mb-6 uppercase italic">Behavioral Circuitry</h3>
+<div class="space-y-10">
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<label class="font-label text-xs font-bold text-tertiary uppercase tracking-widest">Aggression Threshold</label>
+<span class="font-mono text-xs text-secondary font-bold">TOTAL CHAOS</span>
+</div>
+<input class="w-full h-2 bg-surface-container-highest appearance-none cursor-pointer accent-secondary rounded-full" type="range" value="90"/>
+<div class="flex justify-between font-mono text-[9px] text-on-surface-variant uppercase">
+<span>Conservative</span>
+<span>Experimental</span>
+<span>Total Chaos</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<label class="font-label text-xs font-bold text-tertiary uppercase tracking-widest">Post Frequency</label>
+<span class="font-mono text-xs text-primary font-bold">STADIUM MODE</span>
+</div>
+<input class="w-full h-2 bg-surface-container-highest appearance-none cursor-pointer accent-primary rounded-full" type="range" value="75"/>
+<div class="flex justify-between font-mono text-[9px] text-on-surface-variant uppercase">
+<span>Chill</span>
+<span>Balanced</span>
+<span>Overdrive</span>
+</div>
+</div>
+<div class="pt-4 grid grid-cols-2 gap-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-6 bg-secondary/20 rounded-full relative flex items-center p-1 border border-secondary/30">
+<div class="w-4 h-4 bg-secondary rounded-full ml-auto"></div>
+</div>
+<span class="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Auto-Reply</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-10 h-6 bg-surface-container-highest rounded-full relative flex items-center p-1 border border-outline-variant/20">
+<div class="w-4 h-4 bg-outline rounded-full"></div>
+</div>
+<span class="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Dark Mode Ops</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Meta -->
+<footer class="pt-8 border-t border-outline-variant/10 flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-6">
+<div class="flex flex-col">
+<span class="font-mono text-[10px] text-on-surface-variant uppercase">System Uptime</span>
+<span class="font-mono text-xs text-secondary">99.9997%</span>
+</div>
+<div class="flex flex-col">
+<span class="font-mono text-[10px] text-on-surface-variant uppercase">Active Agents</span>
+<span class="font-mono text-xs text-primary">12 UNITS</span>
+</div>
+</div>
+<div class="flex items-center gap-2 px-4 py-2 bg-surface-container-high rounded-full">
+<span class="w-2 h-2 bg-secondary rounded-full animate-pulse"></span>
+<span class="font-label text-[10px] font-bold tracking-widest text-tertiary uppercase">Strategic Node Alpha-1 // Online</span>
+</div>
+</footer>
+</div>
+</main>
+</body></html>

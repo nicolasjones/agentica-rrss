@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Base Layers */
+    --surface: #0e0e0f;
+    --surface-low: #131314;
+    --surface-high: #201f21;
+    --surface-highest: #262627;
+    --surface-dim: #0a0a0b;
+    --surface-bright: #2c2c2d;
+    
+    /* Brand Colors */
+    --primary: #cc97ff;
+    --primary-dim: #9c48ea;
+    --on-primary: #47007c;
+    
+    --secondary: #6bff8f;
+    --on-secondary: #005f28;
+    
+    --tertiary: #f9f9f8; /* Vintage White */
+    --on-surface-variant: #adaaab;
+    --outline-variant: rgba(72, 72, 73, 0.2);
+    
+    /* Fonts */
+    --font-display: 'Epilogue', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'Space Grotesk', monospace;
+  }
+
+  body {
+    @apply bg-[var(--surface)] text-[var(--tertiary)] font-body antialiased;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    background-blend-mode: overlay;
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+    @apply font-black tracking-tighter uppercase;
+  }
+
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  .animate-in {
+    animation-duration: 0.6s;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    animation-fill-mode: forwards;
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-in-from-bottom {
+  from { transform: translateY(1rem); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(250%); }
+}
+
+.fade-in { animation-name: fade-in; }
+.slide-in-from-bottom-4 { animation-name: slide-in-from-bottom; }
+
+/* Custom components based on DESIGN.md */
+@layer components {
+  .btn-primary {
+    @apply bg-[var(--primary)] text-[var(--on-primary)] px-6 py-3 rounded-sm font-black uppercase tracking-tighter text-lg hover:brightness-110 transition-all flex items-center justify-center gap-2;
+  }
+  
+  .btn-secondary {
+    @apply bg-[var(--secondary)] text-[var(--on-secondary)] px-6 py-3 rounded-sm font-black uppercase tracking-tighter text-lg hover:brightness-110 transition-all flex items-center justify-center gap-2;
+  }
+
+  .btn-tertiary {
+    @apply border border-[var(--outline-variant)] text-[var(--tertiary)] px-6 py-3 rounded-sm font-black uppercase tracking-widest text-xs hover:bg-white/5 transition-all flex items-center justify-center gap-2;
+  }
+
+  .surface-card {
+    @apply bg-[var(--surface-low)] rounded-sm p-6 relative overflow-hidden transition-all;
+  }
+
+  .surface-card-high {
+    @apply bg-[var(--surface-high)] rounded-sm p-8 relative overflow-hidden transition-all;
+  }
+
+  .input-field {
+    @apply bg-[var(--surface-highest)] border-none rounded-sm px-4 py-3 text-[var(--tertiary)] focus:ring-1 focus:ring-[var(--secondary)] outline-none transition-all font-bold placeholder:text-[var(--on-surface-variant)]/30;
+  }
+
+  .label-tech {
+    @apply text-[var(--on-surface-variant)] text-[10px] font-mono font-black uppercase tracking-[0.2em] mb-1 block;
+  }
+}

@@ -1,0 +1,109 @@
+# render.yaml - Render.com Blueprint
+# Deploy with: render blueprint apply
+
+services:
+  # === Backend API ===
+  - type: web
+    name: agenmatica-api
+    runtime: python
+    region: oregon
+    plan: free  # Upgrade to starter ($7/mo) at 10+ bands
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DEBUG
+        value: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: agenmatica-db
+          property: connectionString
+          transform: "postgresql+asyncpg://{username}:{password}@{host}:{port}/{database}"
+      - key: REDIS_URL
+        fromService:
+          name: agenmatica-redis
+          type: redis
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: MOCK_LLM
+        value: false
+      - key: MOCK_SOCIAL_APIS
+        value: false
+      - key: MOCK_IMAGE_GEN
+        value: true  # Keep mock until Replicate key ready
+      - key: TOGETHER_API_KEY
+        sync: false  # Set manually in dashboard
+      - key: INSTAGRAM_APP_ID
+        sync: false
+      - key: INSTAGRAM_APP_SECRET
+        sync: false
+
+  # === Celery Worker ===
+  - type: worker
+    name: agenmatica-worker
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && celery -A app.core.celery_app worker --loglevel=info --concurrency=2
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: agenmatica-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: agenmatica-redis
+          type: redis
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          name: agenmatica-redis
+          type: redis
+          property: connectionString
+      - key: TOGETHER_API_KEY
+        sync: false
+
+  # === Celery Beat (Scheduler) ===
+  - type: worker
+    name: agenmatica-beat
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && celery -A app.core.celery_app beat --loglevel=info
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: agenmatica-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: agenmatica-redis
+          type: redis
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          name: agenmatica-redis
+          type: redis
+          property: connectionString
+
+  # === Redis (Cache + Celery Broker) ===
+  - type: redis
+    name: agenmatica-redis
+    region: oregon
+    plan: free
+    maxmemoryPolicy: allkeys-lru
+
+# === PostgreSQL Database ===
+databases:
+  - name: agenmatica-db
+    region: oregon
+    plan: free  # 1GB storage, sufficient for MVP
+    postgresMajorVersion: 16
+    ipAllowList: []  # Render internal only

@@ -1,0 +1,21 @@
+
+> agenmatica-frontend@0.1.0 build
+> vite build
+
+vite v5.4.21 building for production...
+transforming...
+✓ 4 modules transformed.
+x Build failed in 357ms
+error during build:
+[vite:css] [postcss] /Users/mac/Desktop/Proyectos/Proyectos Desarrollo/Agenmatica/Agentic_RRSS/frontend/src/styles/index.css:20:3: You cannot `@apply` the `font-label` utility here because it creates a circular dependency.
+file: /Users/mac/Desktop/Proyectos/Proyectos Desarrollo/Agenmatica/Agentic_RRSS/frontend/src/styles/index.css:20:2
+    at Input.error (/Users/mac/Desktop/Proyectos/Proyectos Desarrollo/Agenmatica/Agentic_RRSS/frontend/node_modules/postcss/lib/input.js:135:16)
+    at Rule.error (/Users/mac/Desktop/Proyectos/Proyectos Desarrollo/Agenmatica/Agentic_RRSS/frontend/node_modules/postcss/lib/node.js:146:32)
+    at processApply (/Users/mac/Desktop/Proyectos/Proyectos Desarrollo/Agenmatica/Agentic_RRSS/frontend/node_modules/tailwindcss/lib/lib/expandApplyAtRules.js:443:32)
+    at /Users/mac/Desktop/Proyectos/Proyectos Desarrollo/Agenmatica/Agentic_RRSS/frontend/node_modules/tailwindcss/lib/lib/expandApplyAtRules.js:551:9
+    at /Users/mac/Desktop/Proyectos/Proyectos Desarrollo/Agenmatica/Agentic_RRSS/frontend/node_modules/tailwindcss/lib/processTailwindFeatures.js:55:50
+    at async plugins (/Users/mac/Desktop/Proyectos/Proyectos Desarrollo/Agenmatica/Agentic_RRSS/frontend/node_modules/tailwindcss/lib/plugin.js:38:17)
+    at async LazyResult.runAsync (/Users/mac/Desktop/Proyectos/Proyectos Desarrollo/Agenmatica/Agentic_RRSS/frontend/node_modules/postcss/lib/lazy-result.js:293:11)
+    at async compileCSS (file:///Users/mac/Desktop/Proyectos/Proyectos%20Desarrollo/Agenmatica/Agentic_RRSS/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:36898:21)
+    at async Object.transform (file:///Users/mac/Desktop/Proyectos/Proyectos%20Desarrollo/Agenmatica/Agentic_RRSS/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:36171:11)
+    at async transform (file:///Users/mac/Desktop/Proyectos/Proyectos%20Desarrollo/Agenmatica/Agentic_RRSS/frontend/node_modules/rollup/dist/es/shared/node-entry.js:21316:16)

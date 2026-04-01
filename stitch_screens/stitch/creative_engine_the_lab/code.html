@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AGENMATICA | THE LAB</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;800;900&amp;family=Inter:wght@400;500;600&amp;family=Space_Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "surface-container-high": "#201f21",
+                "primary": "#cc97ff",
+                "on-secondary-fixed": "#004a1d",
+                "secondary-container": "#006e2f",
+                "on-error-container": "#ffb2b9",
+                "on-primary-fixed": "#000000",
+                "surface-variant": "#262627",
+                "secondary-fixed": "#6bff8f",
+                "on-tertiary-fixed-variant": "#6c6d6d",
+                "error-dim": "#d73357",
+                "on-secondary-container": "#e4ffe2",
+                "inverse-on-surface": "#565556",
+                "surface-tint": "#cc97ff",
+                "secondary": "#6bff8f",
+                "on-secondary": "#005f28",
+                "inverse-surface": "#fcf8f9",
+                "secondary-fixed-dim": "#5bf083",
+                "error-container": "#a70138",
+                "on-secondary-fixed-variant": "#006a2d",
+                "outline-variant": "#484849",
+                "surface-container-highest": "#262627",
+                "on-surface-variant": "#adaaab",
+                "tertiary-dim": "#cecfce",
+                "inverse-primary": "#842cd3",
+                "tertiary": "#f9f9f8",
+                "tertiary-container": "#ebebea",
+                "surface": "#0e0e0f",
+                "on-tertiary": "#5e5f5f",
+                "on-error": "#490013",
+                "outline": "#767576",
+                "primary-dim": "#9c48ea",
+                "on-primary": "#47007c",
+                "tertiary-fixed": "#ffffff",
+                "surface-bright": "#2c2c2d",
+                "on-background": "#ffffff",
+                "error": "#ff6e84",
+                "on-primary-container": "#360061",
+                "surface-dim": "#0e0e0f",
+                "tertiary-fixed-dim": "#f1f1f0",
+                "surface-container-lowest": "#000000",
+                "on-tertiary-container": "#555757",
+                "primary-fixed-dim": "#b971ff",
+                "on-primary-fixed-variant": "#430076",
+                "secondary-dim": "#5bf083",
+                "surface-container-low": "#131314",
+                "primary-container": "#c284ff",
+                "surface-container": "#1a191b",
+                "background": "#0e0e0f",
+                "primary-fixed": "#c284ff",
+                "on-surface": "#ffffff",
+                "on-tertiary-fixed": "#4f5050"
+              },
+              fontFamily: {
+                "headline": ["Epilogue"],
+                "body": ["Inter"],
+                "label": ["Space Grotesk"]
+              },
+              borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+            },
+          },
+        }
+    </script>
+<style>
+        .noise-overlay {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        .fender-knob {
+            background: radial-gradient(circle at 30% 30%, #2c2c2d 0%, #000000 100%);
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 4px 6px rgba(0,0,0,0.5);
+        }
+        .glass-panel {
+            backdrop-filter: blur(16px);
+            background: rgba(26, 25, 27, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body overflow-x-hidden selection:bg-secondary selection:text-on-secondary">
+<div class="noise-overlay fixed inset-0 z-[100]"></div>
+<!-- SideNavBar (Rail) -->
+<aside class="fixed left-0 top-0 h-full flex flex-col items-center py-6 z-50 bg-[#131314] dark:bg-zinc-900 h-full w-20 border-r border-zinc-800/20 bg-zinc-900 shadow-[4px_0px_20px_rgba(0,0,0,0.5)]">
+<div class="mb-10">
+<span class="text-xl font-black italic text-[#cc97ff] dark:text-purple-400 tracking-tighter">A</span>
+</div>
+<nav class="flex flex-col gap-8 flex-1">
+<button class="flex flex-col items-center gap-1 group text-zinc-500 dark:text-zinc-500 hover:text-white transition-colors duration-200">
+<span class="material-symbols-outlined text-2xl">sell</span>
+<span class="font-['Epilogue'] tracking-tighter uppercase font-bold text-[10px]">Pick</span>
+</button>
+<button class="flex flex-col items-center gap-1 group text-zinc-500 dark:text-zinc-500 hover:text-white transition-colors duration-200">
+<span class="material-symbols-outlined text-2xl">speaker</span>
+<span class="font-['Epilogue'] tracking-tighter uppercase font-bold text-[10px]">Speaker</span>
+</button>
+<button class="flex flex-col items-center gap-1 group text-[#6bff8f] dark:text-green-400 scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">settings_input_component</span>
+<span class="font-['Epilogue'] tracking-tighter uppercase font-bold text-[10px]">Circuit</span>
+</button>
+<button class="flex flex-col items-center gap-1 group text-zinc-500 dark:text-zinc-500 hover:text-white transition-colors duration-200">
+<span class="material-symbols-outlined text-2xl">psychology</span>
+<span class="font-['Epilogue'] tracking-tighter uppercase font-bold text-[10px]">Brain</span>
+</button>
+<button class="flex flex-col items-center gap-1 group text-zinc-500 dark:text-zinc-500 hover:text-white transition-colors duration-200">
+<span class="material-symbols-outlined text-2xl">credit_card</span>
+<span class="font-['Epilogue'] tracking-tighter uppercase font-bold text-[10px]">Billing</span>
+</button>
+</nav>
+<div class="mt-auto">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant/20 flex items-center justify-center overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="close-up profile avatar of a tech-savvy creative professional with neon lighting accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBheVQnO1aN3q1uT_PZp_JD53NSm7gOBW-ftydn09FF0s_lAEBofwgdA9dWXrkFkd0StA3BHGVZGpQti6mbs0UipaGa9_iUwKzL9H8JJ7ngbOeB1Uxa3xHxtijpZLhHl5851tolsaod5eVOI-BCR82j81HBXSiYvUrpKckFeoZzNGvPMWULKvaoKiOFqx6oEeZWefCc4t2QxeHna375lX9ArftmUkq6PIx9oDBC6gVCaRoIfTWmD35tcSawVoFbv58hH8b1-qf-_c8"/>
+</div>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-20 h-16 flex justify-between items-center px-8 z-40 bg-[#0e0e0f]/80 dark:bg-black/80 backdrop-blur-xl border-b border-zinc-800/10 transition-all duration-300 ease-in-out">
+<div class="flex items-center gap-4">
+<h1 class="text-2xl font-black text-[#f9f9f8] dark:text-white uppercase font-headline">AGENMATICA</h1>
+<span class="font-label text-[10px] tracking-[0.2em] bg-surface-container-high px-2 py-1 rounded-sm text-secondary">AI SYNCED: 98.4%</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex items-center gap-4 text-zinc-400 font-label text-xs tracking-widest">
+<span class="text-[#6bff8f] font-bold">THE LAB</span>
+<span class="hover:text-white transition-colors cursor-pointer">ROSTER</span>
+<span class="hover:text-white transition-colors cursor-pointer">ENGINE</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">sensors</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">bolt</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">account_circle</span>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="ml-20 pt-16 min-h-screen">
+<!-- Hero Section: THE LAB -->
+<section class="relative w-full h-[512px] overflow-hidden flex items-end p-12">
+<div class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent z-10"></div>
+<img alt="Lab Visual" class="absolute inset-0 w-full h-full object-cover grayscale opacity-40 mix-blend-lighten" data-alt="abstract digital art showing glowing purple neural network strands and human facial topology in a dark tech environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADfm13Oc-dQhEeOhamzg4O98S15Hm15aOrFJcwtqP1gVVu6WGHcP9zY-EptZ6C3ruholUVWphA1VXHpvmVvvKjS-km-N8YfvF9a4dOO7yvMYzbLOOFZGi-VaY4Kl7of4umrZCYL5BzoQKuOH-qkOChy7gzT3Jgmgg98zNvvoMRruB4T7AUMX4c_wLloFAzySbCHpE2LwZZOWA9yIHmj8yKDA1WEFen-g_M3dUWeyEwajCeRM1MZnBbmN4NWQojSeoQsQRchcO4m7o"/>
+<div class="relative z-20 max-w-4xl">
+<h2 class="text-7xl font-black font-headline tracking-tighter uppercase leading-none mb-4">
+                    THE <span class="text-primary italic">LAB</span>
+</h2>
+<div class="flex gap-4 items-center">
+<div class="h-[2px] w-24 bg-secondary"></div>
+<p class="font-label text-sm uppercase tracking-widest text-on-surface-variant">Active LoRA Training: Phase 4 / Neural Extraction</p>
+</div>
+</div>
+</section>
+<div class="px-12 pb-24 grid grid-cols-12 gap-8">
+<!-- Member Management Bento -->
+<div class="col-span-12 lg:col-span-8 space-y-8">
+<div class="flex items-center justify-between mb-2">
+<h3 class="font-headline text-2xl font-bold tracking-tight uppercase">Band Hierarchy <span class="text-outline">/ Members</span></h3>
+<button class="px-4 py-2 border border-outline-variant/20 hover:bg-surface-container-high transition-all font-label text-xs uppercase tracking-widest">Add Subject</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Member Card 1 -->
+<div class="glass-panel p-6 border border-outline-variant/10 rounded-sm relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-2">
+<span class="flex h-2 w-2 rounded-full bg-secondary animate-pulse"></span>
+</div>
+<div class="flex gap-6 items-center">
+<div class="w-20 h-20 bg-surface-container-highest rounded-sm border border-primary/20 p-1">
+<img alt="Lead Singer" class="w-full h-full object-cover grayscale" data-alt="gritty black and white portrait of a rock musician with intense gaze and messy hair in a studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAF8MTm3gPzLk-_HkQCh4W26LjhMU79BIYIPhe1VkFpOE9TdpUzJAIa_3ZtwCo7EyqKKdsNhP_MjCOFdkhNar6so7fXM6MNGt1-x8oOcla6-FVEwI_VzwxC7-x8FoMwlgt6z8B72JVzdbvwKbpzcONoC8fxUUPa-W5xwMeaTEaRGj2a6kBa0vTBjngMPGAlY2K8-pLRc6ATp0B5Gp5W2cShuVzPiwXp2pTqkazWg8s4TO3Y2lWtIeyfTy5ihtdFUohUqZmw_mdKm28"/>
+</div>
+<div class="flex-1">
+<h4 class="font-headline font-bold text-lg uppercase tracking-tight">Kaelen Vox</h4>
+<p class="font-label text-[10px] text-secondary tracking-widest mb-2 uppercase">AI Model Trained (100%)</p>
+<div class="w-full h-1 bg-surface-container-lowest overflow-hidden">
+<div class="w-full h-full bg-secondary"></div>
+</div>
+</div>
+</div>
+<div class="mt-4 flex gap-2">
+<span class="text-[9px] font-label px-2 py-0.5 bg-surface-container-highest border border-outline-variant/20 text-on-surface-variant">VOCAL_CORE_V3</span>
+<span class="text-[9px] font-label px-2 py-0.5 bg-surface-container-highest border border-outline-variant/20 text-on-surface-variant">STAGE_PRESENCE</span>
+</div>
+</div>
+<!-- Member Card 2 -->
+<div class="glass-panel p-6 border border-outline-variant/10 rounded-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 p-2">
+<span class="flex h-2 w-2 rounded-full bg-primary animate-bounce"></span>
+</div>
+<div class="flex gap-6 items-center">
+<div class="w-20 h-20 bg-surface-container-highest rounded-sm border border-primary/20 p-1">
+<img alt="Lead Guitar" class="w-full h-full object-cover grayscale" data-alt="dramatic studio lighting on a male guitarist with tattoos, holding an electric guitar in a dark environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDi77pBWQkPiBrenGskZ8xTLY4TpsGMQDwoMcqKjodl-eKOHbynpDRZdnvX2LOFEQuSG4lQyxBInEVGqqtoKklimDe1Q308j7MARIo4PkZp9Ksj72yCFgXiYsXgvg1s7cNQaIBSDCUB7uued69jkGqal3k90xWwJgmN5GOqdDkZe1UF9ro9W5UYPusue_AYuunsz8lEDrrlNbnsLOkv1n4-CIN3DeIDccF223pra5OWJN3dwXpY3AJJcM2ZplLgap-wZfHMBhIYVgs"/>
+</div>
+<div class="flex-1">
+<h4 class="font-headline font-bold text-lg uppercase tracking-tight">Jax Riff</h4>
+<p class="font-label text-[10px] text-primary tracking-widest mb-2 uppercase">Syncing New Styles (68%)</p>
+<div class="w-full h-1 bg-surface-container-lowest overflow-hidden">
+<div class="w-[68%] h-full bg-primary"></div>
+</div>
+</div>
+</div>
+<div class="mt-4 flex gap-2">
+<span class="text-[9px] font-label px-2 py-0.5 bg-surface-container-highest border border-outline-variant/20 text-on-surface-variant">FRET_LOGIC_PRO</span>
+<span class="text-[9px] font-label px-2 py-0.5 bg-primary/10 border border-primary/30 text-primary">LEARNING_CHAOS</span>
+</div>
+</div>
+</div>
+<!-- Video Engine Tool -->
+<div class="surface-container-low p-8 border border-outline-variant/10 rounded-sm mt-12">
+<div class="flex items-start justify-between mb-8">
+<div>
+<h3 class="font-headline text-3xl font-black uppercase tracking-tighter mb-1">Director <span class="text-secondary italic">AI</span></h3>
+<p class="font-label text-xs text-on-surface-variant tracking-widest uppercase">Video Engine / Social Manifestation</p>
+</div>
+<div class="material-symbols-outlined text-4xl text-outline-variant/30">videocam</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+<!-- Controls -->
+<div class="space-y-8">
+<div>
+<label class="font-label text-[10px] uppercase tracking-[0.3em] text-on-surface-variant mb-4 block">Musical Vibe</label>
+<div class="grid grid-cols-3 gap-2">
+<button class="p-3 bg-surface border border-outline-variant/20 text-[10px] font-label uppercase tracking-widest hover:border-secondary transition-colors">Grunge</button>
+<button class="p-3 bg-secondary text-on-secondary text-[10px] font-headline font-black uppercase tracking-widest">Metal</button>
+<button class="p-3 bg-surface border border-outline-variant/20 text-[10px] font-label uppercase tracking-widest hover:border-secondary transition-colors">Psychedelic</button>
+</div>
+</div>
+<div>
+<label class="font-label text-[10px] uppercase tracking-[0.3em] text-on-surface-variant mb-6 block">Director Style Intensity</label>
+<div class="flex items-center gap-8">
+<div class="flex flex-col items-center gap-3">
+<div class="w-12 h-12 fender-knob rounded-full border-2 border-zinc-700 flex items-center justify-center relative transform rotate-[145deg]">
+<div class="absolute top-1 w-1 h-3 bg-secondary rounded-full"></div>
+</div>
+<span class="font-label text-[9px] uppercase tracking-tighter">Aggression</span>
+</div>
+<div class="flex flex-col items-center gap-3">
+<div class="w-12 h-12 fender-knob rounded-full border-2 border-zinc-700 flex items-center justify-center relative transform rotate-[45deg]">
+<div class="absolute top-1 w-1 h-3 bg-primary rounded-full"></div>
+</div>
+<span class="font-label text-[9px] uppercase tracking-tighter">Glitched</span>
+</div>
+<div class="flex flex-col items-center gap-3">
+<div class="w-12 h-12 fender-knob rounded-full border-2 border-zinc-700 flex items-center justify-center relative transform rotate-[220deg]">
+<div class="absolute top-1 w-1 h-3 bg-on-surface-variant rounded-full"></div>
+</div>
+<span class="font-label text-[9px] uppercase tracking-tighter">Entropy</span>
+</div>
+</div>
+</div>
+<button class="w-full py-4 bg-primary text-on-primary font-headline font-black uppercase tracking-widest text-sm hover:bg-primary-dim transition-all shadow-[0_0_30px_rgba(204,151,255,0.3)]">
+                                Generate Reel Sequence
+                            </button>
+</div>
+<!-- Preview Side -->
+<div class="bg-surface-container-highest border border-outline-variant/20 aspect-[9/16] relative flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 z-0 overflow-hidden">
+<img alt="Live Preview" class="w-full h-full object-cover grayscale opacity-50 blur-[2px]" data-alt="cinematic shot of a concert crowd with bright stage lights creating lens flares and silhouettes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgGotndIjgb91n3HS3viaDr3jCF3Ppj3JgWbKRJlX9Le6gEhnm7BKmRk3XjrDhY9P4n5VJgLRSLTU60YGPkQ1kkDmuGgDzRAruEGSpZGwyGck50HiBcxbAqH90DLfcAWDIfJsYe6_q-UpbtpFauJsrT2b7GK45dhOcJYUl6AACe3yusUbP1GZ4bPvIYpHAmsOpXMHh-sp_tu0iaGrlss22P298ECBPy3AYjWWqFZJ5VoCowIIaKOBcHTQxlvronX5X4VbTX-XnkOg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent"></div>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-4 text-center p-6">
+<span class="material-symbols-outlined text-5xl text-secondary animate-pulse">refresh</span>
+<p class="font-label text-[10px] uppercase tracking-widest leading-relaxed">Processing temporal frames...<br/><span class="text-primary">Metal_Vibe_Applied</span></p>
+</div>
+<div class="absolute top-4 left-4 flex gap-1">
+<div class="h-2 w-2 rounded-full bg-red-600 animate-pulse"></div>
+<span class="font-label text-[8px] uppercase">REC</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Visual Playground Column -->
+<div class="col-span-12 lg:col-span-4 space-y-8">
+<div class="surface-container border border-outline-variant/10 p-6 rounded-sm sticky top-24">
+<h3 class="font-headline text-xl font-bold uppercase mb-6 flex items-center gap-2">
+                        Visual <span class="text-primary italic">Playground</span>
+<span class="material-symbols-outlined text-sm">auto_awesome</span>
+</h3>
+<div class="space-y-6">
+<!-- Asset Preview -->
+<div class="relative aspect-square bg-surface-container-low border border-outline-variant/10 overflow-hidden group">
+<img alt="Active Asset" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="highly stylized music poster with grain texture, distorted typography and neon purple accent lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZngaKe95NHw5UPB-guBNxZPLjuizfo-6jE2NOhm_DoT360r4Mo-StcVnWp6-tid-SysiUhDFj6Z9dLfsPDKwppYLOeHVfcxO0Zy2N1dxtew3T3EEdsFQBZdqC1vHzy7xL6DypLvzI6wgG_rls9hUewV811TVmqpWZ0oXvanOs7kPTQ_hfkltZJkAblLmtR6b26UZolvW9tjapXul7fqaFfA42WB5Ucs44fGqA3oUS1H5h742DtGCAg7GtAKZuQVajVkNnCrVRdKU"/>
+<!-- Filter Overlays -->
+<div class="absolute inset-0 pointer-events-none mix-blend-screen opacity-30 bg-[linear-gradient(transparent_0%,rgba(107,255,143,0.1)_50%,transparent_100%)] bg-[length:100%_4px]"></div>
+</div>
+<!-- Filter Selection -->
+<div>
+<span class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant block mb-4">Tactile Filters</span>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center gap-3 p-3 bg-surface-container-high border border-secondary text-secondary font-label text-[10px] uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">grain</span> Grain
+                                </button>
+<button class="flex items-center gap-3 p-3 bg-surface-container-high border border-outline-variant/20 hover:border-primary transition-colors font-label text-[10px] uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">bolt</span> Glitch
+                                </button>
+<button class="flex items-center gap-3 p-3 bg-surface-container-high border border-outline-variant/20 hover:border-primary transition-colors font-label text-[10px] uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">videocam</span> VHS
+                                </button>
+<button class="flex items-center gap-3 p-3 bg-surface-container-high border border-outline-variant/20 hover:border-primary transition-colors font-label text-[10px] uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">invert_colors</span> Invert
+                                </button>
+</div>
+</div>
+<!-- Mixed Assets -->
+<div>
+<span class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant block mb-4">Asset Stack</span>
+<div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+<div class="min-w-[80px] h-[80px] bg-surface-container-lowest border border-outline-variant/10 cursor-pointer hover:border-secondary transition-all">
+<img alt="Thumb 1" class="w-full h-full object-cover grayscale" data-alt="close-up of a vintage concert microphone in a smoke filled room" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJTk70vqmM9N0ZT8I8nIHi5h6jRTfTxGS9cRp-oJZQs1NtXzJuBveGsUQBwQpwnDxHQ-BVJV5d_bLYQ_MsBOJL8sTOuEHrW13LNDmA6vnlYVLNYpZApwn884eIpO_naj4lIDqINDrL-XmXZb1VHeVxoxw-LpYkJKNwHGwVwxBiwmO8JCqBI2wttceiHZ4dtRHIfdDpAtr8sr1kIpiOG64FkEGeM3Jm1ZwWAUt5jcwF90QtyeKQencKKII64tojyA-cETNWk3lPbNw"/>
+</div>
+<div class="min-w-[80px] h-[80px] bg-surface-container-lowest border border-outline-variant/10 cursor-pointer hover:border-secondary transition-all">
+<img alt="Thumb 2" class="w-full h-full object-cover grayscale" data-alt="extreme close up of a guitar amp stack in black and white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdAVfDBJdz0YWtHQx6IqL0KMcpqsr6P2M4vM7vjC_wzRI-YzgYI2_JRp0ZGkPtiFEIapTxNcmENGbsl9T7AEt5U_Z061gk9tFI4j0QWqdpqR6luoJaSOxNUlpF81zh7XIECvIzQSqQL0932EhruTSay-zw2nGSU3xsSZ04jO10fdgn3RrwVQAdmFU9mqjH_vljv2PBdSLToeSx-1bATcOb_cN7H3-6kZ_EzByEWYz7dQbV--wx9_6n6m8-idWrAosTjOu48hERL38"/>
+</div>
+<div class="min-w-[80px] h-[80px] bg-surface-container-lowest border border-outline-variant/10 cursor-pointer hover:border-secondary transition-all">
+<img alt="Thumb 3" class="w-full h-full object-cover grayscale" data-alt="blurred motion shot of a drummer during a high energy performance" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmao1n7o6UVFYORSBa7ireLIMt6bmA5Swo_QYaX7NZdw6G-y3VQSx6k93EZnMuONYOOhPRu2b1kUB2CzCFuVhI1hRtjuOcAl6ZsDcReICCxzEHSzT9w7uqis7bFv4FPmNJbsSPLUxp28LF5Ljq8UkRy4vUOZ5M6sRHt26Zd0xXdBLb99aYJX9OrZcppm9yRILuwUIum_7JBt_1II_UFTcz6_fWMzvU_Nah1kCI7yZQHlvc3FU2IAAK8vrw_7lr5hoQjOWNw9Rkeow"/>
+</div>
+</div>
+</div>
+<button class="w-full py-4 border-2 border-primary text-primary font-headline font-bold uppercase tracking-widest text-xs hover:bg-primary hover:text-on-primary transition-all">
+                            Export Manifest
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Decorative -->
+<footer class="ml-20 border-t border-outline-variant/10 p-12 flex justify-between items-center opacity-50">
+<div class="font-label text-[9px] uppercase tracking-[0.5em]">AGENMATICA / NEURAL_AUDIO_VISUAL_SYSTEM</div>
+<div class="flex gap-8 font-label text-[9px] uppercase tracking-widest">
+<span>Lat: 34.0522° N</span>
+<span>Long: 118.2437° W</span>
+<span class="text-secondary">Status: OPTIMAL</span>
+</div>
+</footer>
+</body></html>
