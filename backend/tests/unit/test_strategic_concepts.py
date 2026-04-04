@@ -32,7 +32,7 @@ def test_strategic_post_without_caption():
     assert post.concept_title == "Expectativa pre-evento — Show en Niceto"
     assert post.narrative_goal is not None
     assert post.caption is None
-    assert post.is_approved is False
+    assert not post.is_approved  # None or False — column default only fires on DB flush
 
 
 def test_strategic_post_caption_nullable_by_default():
