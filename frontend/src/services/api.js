@@ -80,6 +80,8 @@ export const postsAPI = {
   reject: (postId, data) => api.post(`/posts/${postId}/reject`, data),
   published: (bandId, limit = 20) =>
     api.get('/posts/published', { params: { band_id: bandId, limit } }),
+  createFromDraft: (bandId, caption, targetPlatform = 'instagram') =>
+    api.post('/posts/create-from-draft', { band_id: bandId, caption, target_platform: targetPlatform }),
 };
 
 // ─── Analytics ───────────────────────────────────
@@ -87,6 +89,7 @@ export const postsAPI = {
 export const analyticsAPI = {
   overview: (bandId) => api.get('/analytics/overview', { params: { band_id: bandId } }),
   getAggregate: () => api.get('/analytics/aggregate'),
+  dashboardPulse: (bandId) => api.get(`/analytics/dashboard-pulse/${bandId}`),
   platform: (platform, bandId) =>
     api.get(`/analytics/${platform}`, { params: { band_id: bandId } }),
 };
@@ -96,6 +99,26 @@ export const campaignsAPI = {
   get: (id) => api.get(`/campaigns/${id}`),
   create: (bandId, data) => api.post(`/campaigns/?band_id=${bandId}`, data),
   update: (id, data) => api.put(`/campaigns/${id}`, data),
+};
+
+// ─── Events ──────────────────────────────────────
+
+export const eventsAPI = {
+  list: (bandId) => api.get('/events/', { params: { band_id: bandId } }),
+  create: (bandId, data) => api.post(`/events/?band_id=${bandId}`, data),
+  delete: (eventId) => api.delete(`/events/${eventId}`),
+};
+
+// ─── Planner ─────────────────────────────────────
+
+export const plannerAPI = {
+  listBatches: (bandId) => api.get('/planner/batches', { params: { band_id: bandId } }),
+  generate: (bandId, timeframe = 'weekly') =>
+    api.get('/planner/generate', { params: { band_id: bandId, timeframe } }),
+  generateSignals: (batchId, bandId) => api.post(`/planner/generate-signals?batch_id=${batchId}&band_id=${bandId}`),
+  approveBatch: (batchId) => api.post(`/planner/approve-batch?batch_id=${batchId}`),
+  refinePost: (bandId, postId, feedback) =>
+    api.post(`/planner/refine-post?band_id=${bandId}`, { post_id: postId, feedback }),
 };
 
 export default api;
