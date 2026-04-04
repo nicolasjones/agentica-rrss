@@ -17,13 +17,13 @@ import {
   RefreshCw,
   Check,
   X,
-  AlertTriangle,
   Users,
   MapPin,
   Clock,
   ToggleLeft,
   ToggleRight,
-  ChevronDown
+  Facebook,
+  Youtube
 } from 'lucide-react';
 import { bandsAPI, networksAPI } from '../services/api';
 import Layout from '../components/Layout';
@@ -34,22 +34,23 @@ const TONE_OPTIONS = ['Sarcástico', 'Energético', 'Crudo', 'Poético', 'Provoc
 const VALUES_OPTIONS = ['Autenticidad', 'DIY', 'Comunidad', 'Libertad', 'Resistencia', 'Arte sobre Dinero', 'Lo Local', 'Experimentación', 'Inclusión', 'Rawness'];
 const ROLE_OPTIONS = ['Cantante', 'Banda', 'Productor', 'DJ', 'Sello Discográfico', 'Manager', 'Colectivo', 'Agencia'];
 const GENRE_OPTIONS = ['Rock Alternativo', 'Post-Punk', 'Indie Rock', 'Metal', 'Electronic', 'Hip-Hop', 'Jazz', 'Folk', 'Pop', 'R&B', 'Reggaeton', 'Cumbia', 'Cumbia Digital', 'Shoegaze', 'Ambient'];
+
 const ALL_PLATFORMS = [
-  { key: 'instagram', label: 'Instagram', Icon: Instagram },
-  { key: 'twitter', label: 'Twitter / X', Icon: Twitter },
-  { key: 'linkedin', label: 'LinkedIn', Icon: Linkedin },
-  { key: 'tiktok', label: 'TikTok', Icon: Music },
-  { key: 'spotify', label: 'Spotify', Icon: Music },
-  { key: 'facebook', label: 'Facebook', Icon: Globe },
+  { key: 'instagram', label: 'Instagram', Icon: Instagram, color: 'text-pink-400' },
+  { key: 'twitter', label: 'Twitter / X', Icon: Twitter, color: 'text-blue-400' },
+  { key: 'facebook', label: 'Facebook', Icon: Facebook, color: 'text-blue-600' },
+  { key: 'youtube', label: 'YouTube', Icon: Youtube, color: 'text-red-500' },
+  { key: 'tiktok', label: 'TikTok', Icon: Music, color: 'text-white' },
+  { key: 'linkedin', label: 'LinkedIn', Icon: Linkedin, color: 'text-blue-400' },
 ];
 
 const MAX_TAGS = 3;
 const MAX_GENRES = 10;
 
-// ─── TagSelector ─────────────────────────────────────
+// ─── Sub-components ───────────────────────────────────
+
 const TagSelector = ({ label, options, selected = [], onChange, isEditing }) => {
   const [customInput, setCustomInput] = useState('');
-
   const toggle = (tag) => {
     if (!isEditing) return;
     if (selected.includes(tag)) {
@@ -59,7 +60,6 @@ const TagSelector = ({ label, options, selected = [], onChange, isEditing }) => 
       onChange([...selected, tag]);
     }
   };
-
   const addCustom = (e) => {
     if (e.key === 'Enter' && customInput.trim()) {
       e.preventDefault();
@@ -69,213 +69,99 @@ const TagSelector = ({ label, options, selected = [], onChange, isEditing }) => 
       setCustomInput('');
     }
   };
-
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <span className="label-tech mb-0">{label}</span>
-        <span className={`text-[10px] font-mono font-black tracking-widest ${selected.length >= MAX_TAGS ? 'text-[var(--secondary)]' : 'text-gray-600'}`}>
+        <span className="text-[10px] font-mono font-black text-gray-600 uppercase tracking-widest">{label}</span>
+        <span className={`text-[10px] font-mono font-black tracking-widest ${selected.length >= MAX_TAGS ? 'text-[var(--secondary)]' : 'text-gray-700'}`}>
           {selected.length}/{MAX_TAGS}
         </span>
       </div>
-
-      {/* Active tags */}
-      {selected.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {selected.map(tag => (
-            <span
-              key={tag}
-              onClick={() => toggle(tag)}
-              className={`inline-flex items-center gap-2 px-3 py-1.5 text-[10px] font-mono font-black uppercase tracking-wider rounded-sm border ${
-                isEditing
-                  ? 'bg-[var(--primary)]/20 border-[var(--primary)]/50 text-[var(--primary)] cursor-pointer hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400'
-                  : 'bg-[var(--primary)]/10 border-[var(--primary)]/30 text-[var(--primary)] cursor-default'
-              } transition-all`}
-            >
-              {isEditing && <X size={10} />}
-              {tag}
-            </span>
-          ))}
+      <div className="flex flex-wrap gap-2">
+        {selected.map(tag => (
+          <span
+            key={tag}
+            onClick={() => toggle(tag)}
+            className={`inline-flex items-center gap-2 px-3 py-1.5 text-[9px] font-mono font-black uppercase tracking-wider rounded-sm border transition-all ${
+              isEditing
+                ? 'bg-[var(--primary)]/20 border-[var(--primary)]/50 text-[var(--primary)] cursor-pointer hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400'
+                : 'bg-[var(--primary)]/10 border-[var(--primary)]/20 text-[var(--primary)]/70'
+            }`}
+          >
+            {isEditing && <X size={10} />}
+            {tag}
+          </span>
+        ))}
+        {isEditing && options.filter(o => !selected.includes(o)).map(option => (
+          <button
+            key={option}
+            type="button"
+            onClick={() => toggle(option)}
+            disabled={selected.length >= MAX_TAGS}
+            className="px-3 py-1.5 text-[9px] font-mono font-black uppercase border border-[var(--outline-variant)] text-gray-600 hover:border-[var(--primary)]/40 hover:text-[var(--primary)] disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            + {option}
+          </button>
+        ))}
+      </div>
+      {isEditing && (
+        <div className="flex items-center gap-3 mt-2 border-b border-[var(--outline-variant)] pb-2 focus-within:border-[var(--primary)]">
+          <span className="text-[9px] font-mono text-gray-700 uppercase tracking-widest">Custom +</span>
+          <input
+            type="text"
+            value={customInput}
+            onChange={e => setCustomInput(e.target.value)}
+            onKeyDown={addCustom}
+            placeholder="Escribe y pulsa Enter..."
+            disabled={selected.length >= MAX_TAGS}
+            className="bg-transparent text-white text-[10px] font-mono outline-none w-full placeholder:text-gray-800"
+          />
         </div>
       )}
-
-      {/* Options grid (only when editing) */}
-      {isEditing && (
-        <>
-          <div className="flex flex-wrap gap-2">
-            {options.filter(o => !selected.includes(o)).map(option => (
-              <button
-                key={option}
-                type="button"
-                onClick={() => toggle(option)}
-                disabled={selected.length >= MAX_TAGS}
-                className={`px-3 py-1.5 text-[10px] font-mono font-black uppercase tracking-wider rounded-sm border transition-all
-                  ${selected.length >= MAX_TAGS
-                    ? 'border-[var(--outline-variant)] text-gray-700 cursor-not-allowed opacity-40'
-                    : 'border-[var(--outline-variant)] text-gray-500 hover:border-[var(--primary)]/50 hover:text-[var(--primary)] cursor-pointer'
-                  }`}
-              >
-                + {option}
-              </button>
-            ))}
-          </div>
-          {/* Custom tag input */}
-          <div className="flex items-center gap-3 mt-2 border-b border-[var(--outline-variant)] pb-2 focus-within:border-[var(--secondary)]">
-            <span className="text-[10px] font-mono text-gray-600 uppercase tracking-widest whitespace-nowrap">Custom +</span>
-            <input
-              type="text"
-              value={customInput}
-              onChange={e => setCustomInput(e.target.value)}
-              onKeyDown={addCustom}
-              placeholder="Escribe y pulsa Enter..."
-              disabled={selected.length >= MAX_TAGS}
-              className="bg-transparent text-white text-xs font-mono outline-none w-full placeholder:text-gray-800 disabled:cursor-not-allowed"
-            />
-          </div>
-        </>
-      )}
     </div>
   );
 };
 
-// ─── GenreSelector ────────────────────────────────────
-const GenreSelector = ({ selected = [], onChange, isEditing }) => {
-  const toggle = (genre) => {
-    if (!isEditing) return;
-    if (selected.includes(genre)) {
-      onChange(selected.filter(g => g !== genre));
-    } else {
-      if (selected.length >= MAX_GENRES) return;
-      onChange([...selected, genre]);
-    }
-  };
-
-  // Parse from string if needed
-  const selectedArr = typeof selected === 'string' ? selected.split(',').map(s => s.trim()).filter(Boolean) : (selected || []);
-
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <span className="label-tech mb-0">Géneros Musicales</span>
-        <span className={`text-[10px] font-mono font-black tracking-widest ${selectedArr.length >= MAX_GENRES ? 'text-[var(--secondary)]' : 'text-gray-600'}`}>
-          {selectedArr.length}/{MAX_GENRES}
-        </span>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {GENRE_OPTIONS.map(genre => {
-          const isOn = selectedArr.includes(genre);
-          return (
-            <button
-              key={genre}
-              type="button"
-              onClick={() => {
-                if (!isEditing) return;
-                const next = isOn ? selectedArr.filter(g => g !== genre) : [...selectedArr, genre];
-                onChange(next);
-              }}
-              disabled={isEditing && !isOn && selectedArr.length >= MAX_GENRES}
-              className={`px-3 py-1.5 text-[10px] font-mono font-black uppercase tracking-wider rounded-sm border transition-all
-                ${isOn
-                  ? 'bg-[var(--secondary)]/20 border-[var(--secondary)]/60 text-[var(--secondary)]'
-                  : isEditing
-                    ? 'border-[var(--outline-variant)] text-gray-500 hover:border-[var(--secondary)]/40 hover:text-[var(--secondary)] cursor-pointer'
-                    : 'border-[var(--outline-variant)] text-gray-700 cursor-default'
-                } ${isEditing && !isOn && selectedArr.length >= MAX_GENRES ? 'opacity-30 cursor-not-allowed' : ''}`}
-            >
-              {isOn && isEditing ? <span className="inline-flex items-center gap-1"><Check size={8} /> {genre}</span> : genre}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-// ─── NetworkCard ──────────────────────────────────────
 const NetworkCard = ({ network, onConnect, onScan, onDisconnect }) => {
   const isConnected = !!network.connected;
-  const [scanning, setScanning] = useState(false);
   const [confirming, setConfirming] = useState(false);
-
-  const PlatformInfo = ALL_PLATFORMS.find(p => p.key === network.platform?.toLowerCase()) || { Icon: Globe };
-  const { Icon } = PlatformInfo;
-
-  const handleScan = async () => {
-    setScanning(true);
-    await onScan(network.id);
-    setScanning(false);
-  };
+  const Platform = ALL_PLATFORMS.find(p => p.key === network.platform?.toLowerCase()) || { Icon: Globe, color: 'text-gray-500' };
+  const { Icon, color } = Platform;
 
   return (
     <div className={`surface-card p-0 flex flex-col ${isConnected ? 'border-l-2 border-l-[var(--secondary)]' : 'border-l-2 border-l-transparent'}`}>
-      {/* Header */}
-      <div className="p-5 pb-3 border-b border-[var(--outline-variant)] bg-[var(--surface-dim)] flex items-center justify-between">
-        <span className="label-tech mb-0 text-white italic">PORT: {network.platform?.toUpperCase()}</span>
+      <div className="p-4 flex items-center justify-between border-b border-[var(--outline-variant)] bg-[var(--surface-dim)]">
+        <span className={`text-[9px] font-mono font-black uppercase tracking-[0.2em] ${color}`}>{network.platform}</span>
         {isConnected && <div className="w-1.5 h-1.5 rounded-full bg-[var(--secondary)] animate-pulse" />}
       </div>
-
-      {/* Body */}
-      <div className="p-6 flex items-center gap-5">
-        <div className={`w-14 h-14 rounded-sm border flex items-center justify-center flex-shrink-0 ${isConnected ? 'bg-[var(--secondary)]/10 border-[var(--secondary)]/30 text-[var(--secondary)]' : 'bg-white/5 border-[var(--outline-variant)] text-gray-700'}`}>
-          <Icon size={24} />
+      <div className="p-6 flex items-center gap-4">
+        <div className={`w-12 h-12 border flex items-center justify-center ${isConnected ? 'bg-[var(--secondary)]/10 border-[var(--secondary)]/30 text-[var(--secondary)]' : 'bg-white/5 border-[var(--outline-variant)] text-gray-700'}`}>
+          <Icon size={20} />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="text-lg font-display font-black text-white leading-none uppercase mb-1">{network.platform}</h4>
-          {isConnected ? (
-            <>
-              <p className="text-[9px] font-mono font-black text-gray-500 uppercase tracking-widest truncate">
-                @{network.handle || network.username || 'connected'}
-              </p>
-              {network.followers_count > 0 && (
-                <p className="text-[9px] font-mono text-[var(--secondary)] mt-0.5">
-                  {network.followers_count.toLocaleString()} followers
-                </p>
-              )}
-            </>
-          ) : (
-            <p className="text-[9px] font-mono font-black text-gray-600 uppercase tracking-widest">Ready for Signal</p>
-          )}
+          <h4 className="text-sm font-display font-black text-white uppercase italic">{network.platform}</h4>
+          <p className="text-[9px] font-mono text-gray-600 uppercase tracking-widest truncate">
+            {isConnected ? `@${network.handle || 'connected'}` : 'Offline Node'}
+          </p>
         </div>
       </div>
-
-      {/* Actions */}
       <div className="mt-auto border-t border-[var(--outline-variant)]">
         {isConnected ? (
           confirming ? (
-            <div className="p-4 bg-red-950/30 flex items-center justify-between gap-3">
-              <span className="text-[9px] font-mono font-black text-red-400 uppercase tracking-widest">¿Confirmar Hard-Reset?</span>
-              <div className="flex gap-2">
-                <button onClick={() => onDisconnect(network.id)} className="text-[8px] font-mono font-black uppercase px-3 py-1.5 bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/40 transition-all">
-                  SÍ
-                </button>
-                <button onClick={() => setConfirming(false)} className="text-[8px] font-mono font-black uppercase px-3 py-1.5 border border-[var(--outline-variant)] text-gray-500 hover:text-white transition-all">
-                  NO
-                </button>
+            <div className="p-3 bg-red-950/20 flex items-center justify-between gap-2">
+              <span className="text-[8px] font-mono text-red-400 font-bold uppercase">¿Disconnect?</span>
+              <div className="flex gap-1">
+                <button onClick={() => onDisconnect(network.id)} className="px-2 py-1 bg-red-500/20 text-red-400 border border-red-500/30 text-[8px] font-mono font-black uppercase">SÍ</button>
+                <button onClick={() => setConfirming(false)} className="px-2 py-1 border border-[var(--outline-variant)] text-gray-500 text-[8px] font-mono font-black uppercase">NO</button>
               </div>
             </div>
           ) : (
-            <div className="p-4 flex gap-2">
-              <button
-                onClick={handleScan}
-                disabled={scanning}
-                className="flex-1 flex items-center justify-center gap-2 text-[9px] font-mono font-black uppercase tracking-widest text-[var(--primary)] border border-[var(--primary)]/20 py-2 hover:bg-[var(--primary)]/10 transition-all disabled:opacity-50"
-              >
-                <RefreshCw size={10} className={scanning ? 'animate-spin' : ''} />
-                {scanning ? 'Scanning...' : 'Scan'}
-              </button>
-              <button
-                onClick={() => setConfirming(true)}
-                className="px-4 flex items-center justify-center text-[9px] font-mono font-black uppercase tracking-widest text-red-500/60 border border-red-500/20 py-2 hover:bg-red-500/10 hover:text-red-400 transition-all"
-              >
-                <LogOut size={10} />
-              </button>
-            </div>
+            <button onClick={() => setConfirming(true)} className="w-full p-3 text-[9px] font-mono font-black text-red-500/60 hover:text-red-400 hover:bg-red-500/10 transition-all uppercase tracking-widest">
+              Remove Signal Node →
+            </button>
           )
         ) : (
-          <button
-            onClick={() => onConnect(network.platform?.toLowerCase())}
-            className="w-full p-4 text-[9px] font-mono font-black uppercase tracking-widest text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-all text-center"
-          >
+          <button onClick={() => onConnect(network.platform?.toLowerCase())} className="w-full p-3 text-[9px] font-mono font-black text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-all uppercase tracking-widest">
             Authenticate Node →
           </button>
         )}
@@ -284,7 +170,8 @@ const NetworkCard = ({ network, onConnect, onScan, onDisconnect }) => {
   );
 };
 
-// ─── Main Profile ─────────────────────────────────────
+// ─── Main Component ───────────────────────────────────
+
 const Profile = () => {
   const { activeBandId } = useActiveProject();
   const [band, setBand] = useState(null);
@@ -292,8 +179,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [showConnectModal, setShowConnectModal] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [activeTab, setActiveTab] = useState('identity'); // identity, engine, networks
 
   const loadData = useCallback(async () => {
     if (!activeBandId) return;
@@ -315,19 +201,16 @@ const Profile = () => {
   useEffect(() => { loadData(); }, [loadData]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setSaving(true);
     try {
       const { name, genre, role, audience_age_range, audience_location, tone_keywords, values_keywords, auto_publish, posts_per_day } = band;
-      // genre stored as array, send as comma-separated or array per backend
       const genreArr = Array.isArray(genre) ? genre : (genre ? genre.split(',').map(s => s.trim()).filter(Boolean) : []);
       await bandsAPI.update(activeBandId, {
         name, genre: genreArr.join(', '), audience_age_range, audience_location,
         tone_keywords, values_keywords, auto_publish, posts_per_day,
       });
       setIsEditing(false);
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err) {
       console.error(err);
     } finally {
@@ -338,14 +221,8 @@ const Profile = () => {
   const handleConnect = async (platform) => {
     try {
       await networksAPI.connect(platform, activeBandId, { handle: `${band.name.replace(/\s+/g, '').toLowerCase()}_official` });
-      setShowConnectModal(false);
       await loadData();
     } catch (err) { console.error(err); }
-  };
-
-  const handleScan = async (networkId) => {
-    try { await networksAPI.scan(networkId); await loadData(); }
-    catch (err) { console.error(err); }
   };
 
   const handleDisconnect = async (networkId) => {
@@ -353,323 +230,268 @@ const Profile = () => {
     catch (err) { console.error(err); }
   };
 
-  const connectedPlatforms = new Set(networks.filter(n => n.is_active).map(n => n.platform?.toLowerCase()));
-  const availablePlatforms = ALL_PLATFORMS.filter(p => !connectedPlatforms.has(p.key));
-
-  // Helpers for stored genre (might be string or array)
-  const genreArray = band
-    ? (Array.isArray(band.genre) ? band.genre : (band.genre ? band.genre.split(',').map(s => s.trim()).filter(Boolean) : []))
-    : [];
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[var(--surface)] flex items-center justify-center p-12">
-        <div className="w-full max-w-sm h-1 bg-white/5 relative overflow-hidden">
-          <div className="absolute inset-y-0 bg-[var(--primary)] animate-[slide_1.2s_infinite]" style={{ width: '40%' }} />
-        </div>
+  if (loading) return (
+    <div className="min-h-screen bg-[var(--surface)] flex items-center justify-center">
+      <div className="w-48 h-1 bg-white/5 relative overflow-hidden">
+        <div className="absolute inset-y-0 bg-[var(--primary)] animate-[slide_1.5s_infinite]" style={{ width: '40%' }} />
       </div>
-    );
-  }
+    </div>
+  );
 
   return (
     <Layout title="ADN Profile" subtitle={`Ecosistema: ${band?.name}`}>
-      <div className="max-w-5xl animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-12 pb-24">
-
-        {/* ── Edit Mode Header ── */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            {isEditing ? (
-              <span className="flex items-center gap-2 text-[10px] font-mono font-black text-[var(--secondary)] uppercase tracking-widest">
-                <Edit3 size={12} className="animate-pulse" /> Modo Edición Activo
-              </span>
-            ) : (
-              <span className="flex items-center gap-2 text-[10px] font-mono font-black text-gray-600 uppercase tracking-widest">
-                <Lock size={12} /> ADN Protegido - Solo Lectura
-              </span>
-            )}
+      <div className="max-w-5xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+        
+        {/* ── Header Card ── */}
+        <div className="surface-card p-8 flex items-center justify-between border-t-2 border-t-[var(--primary)]">
+          <div className="flex items-center gap-6">
+            <div className="p-4 bg-black border border-[var(--outline-variant)]">
+              <Brain size={32} className="text-[var(--primary)]" />
+            </div>
+            <div>
+              <span className="text-[10px] font-mono font-black text-gray-700 uppercase tracking-widest">Protocolo de Identidad</span>
+              <h2 className="text-3xl font-display font-black text-white italic truncate">{band?.name}</h2>
+            </div>
           </div>
-          <div className="flex gap-3">
-            {isEditing ? (
-              <>
-                <button type="button" onClick={() => { setIsEditing(false); loadData(); }} className="btn-tertiary py-2 px-6 text-xs">
-                  Cancelar
-                </button>
-                <button form="adn-form" type="submit" disabled={saving} className="btn-primary py-2 px-8 text-sm">
-                  {saving ? 'SAVING...' : (saveSuccess ? <><Check size={14} /> SAVED</> : <>GUARDAR ADN <ArrowUpRight size={14} /></>)}
-                </button>
-              </>
-            ) : (
-              <button type="button" onClick={() => setIsEditing(true)} className="btn-primary py-2 px-8 text-sm">
-                <Edit3 size={14} /> EDITAR ADN
-              </button>
-            )}
+          <div className="text-right">
+            <span className="text-[10px] font-mono font-black text-gray-700 uppercase tracking-widest">IA Match Score</span>
+            <div className="flex items-center gap-3 justify-end mt-1">
+              <span className="text-3xl font-display font-black text-[var(--secondary)] italic">{Math.round((band?.confidence_score || 0) * 100)}%</span>
+            </div>
           </div>
         </div>
 
-        <form id="adn-form" onSubmit={handleSubmit} className="space-y-8">
+        {/* ── Tabs Navigation ── */}
+        <div className="flex items-center gap-2 border-b border-[var(--outline-variant)]">
+          {[
+            { id: 'identity', label: 'Identidad Artística', icon: <User size={14} /> },
+            { id: 'engine',   label: 'Motor de IA',        icon: <Zap size={14} /> },
+            { id: 'networks', label: 'Nodos de Señal',     icon: <Globe size={14} /> }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-6 py-4 text-[10px] font-mono font-black uppercase tracking-widest transition-all relative
+                ${activeTab === tab.id ? 'text-white' : 'text-gray-600 hover:text-gray-400'}`}
+            >
+              {tab.icon} {tab.label}
+              {activeTab === tab.id && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[var(--primary)] animate-in fade-in duration-300" />}
+            </button>
+          ))}
 
-          {/* ── IA Score + Identity Header ── */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-            {/* IA Match Card */}
-            <div className="lg:col-span-1 surface-card p-8 flex flex-col justify-center items-center text-center border-t-4 border-t-[var(--primary)]">
-              <div className="p-5 bg-black border border-[var(--outline-variant)] mb-5 shadow-inner">
-                <Brain size={40} className="text-[var(--primary)]" />
-              </div>
-              <span className="label-tech text-gray-600 mb-1">IA Match Rate</span>
-              <h2 className="text-5xl font-display font-black text-white italic">{Math.round((band?.confidence_score || 0) * 100)}%</h2>
-              <div className="w-full h-1 bg-white/5 mt-4 relative overflow-hidden">
-                <div className="absolute inset-y-0 left-0 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] transition-all duration-1000" style={{ width: `${Math.round((band?.confidence_score || 0) * 100)}%` }} />
-              </div>
-              <p className="text-[9px] font-mono font-black text-[var(--secondary)] uppercase tracking-[0.2em] mt-3">Precision Synced</p>
-            </div>
+          <div className="ml-auto pb-2 flex gap-3">
+             {isEditing ? (
+               <>
+                 <button onClick={() => { setIsEditing(false); loadData(); }} className="text-[10px] font-mono font-black uppercase text-gray-700 hover:text-white px-4">Cancelar</button>
+                 <button onClick={handleSubmit} disabled={saving} className="btn-primary py-2 px-6 text-xs">{saving ? 'Guardando...' : 'Guardar ADN'}</button>
+               </>
+             ) : (
+               <button onClick={() => setIsEditing(true)} className="btn-secondary py-2 px-6 text-xs flex items-center gap-2">
+                 <Edit3 size={12} /> Editar ADN
+               </button>
+             )}
+          </div>
+        </div>
 
-            {/* Core Identity Fields */}
-            <div className="lg:col-span-3 surface-card p-10 bg-gradient-to-tr from-[var(--surface-dim)] to-black">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Entity Name */}
-                <div className={`border-l-2 transition-all ${isEditing ? 'border-l-[var(--primary)]' : 'border-l-transparent'}`}>
-                  <label className="label-tech ml-4">Nombre de la Entidad</label>
-                  <input
-                    type="text"
-                    value={band?.name || ''}
-                    onChange={e => setBand({ ...band, name: e.target.value })}
-                    disabled={!isEditing}
-                    className="w-full bg-transparent p-4 text-2xl font-display font-black text-white outline-none uppercase italic disabled:opacity-70"
-                  />
+        {/* ── Tab Content ── */}
+        <div className="animate-in fade-in duration-300">
+          
+          {/* 1. IDENTITY TAB */}
+          {activeTab === 'identity' && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-8">
+                <div className="surface-card p-8 bg-gradient-to-tr from-[var(--surface-dim)] to-[var(--surface)]">
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                      <div className="space-y-4">
+                        <label className="text-[10px] font-mono font-black text-gray-600 uppercase tracking-widest flex items-center gap-2">
+                          <Brain size={12} /> Rol en la Entidad
+                        </label>
+                        {isEditing ? (
+                          <select
+                            value={band?.role || ''}
+                            onChange={e => setBand({ ...band, role: e.target.value })}
+                            className="w-full bg-[var(--surface-highest)] p-3 text-sm font-mono font-black text-white uppercase border border-[var(--outline-variant)] focus:border-[var(--secondary)] outline-none"
+                          >
+                            <option value="">Seleccionar...</option>
+                            {ROLE_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                          </select>
+                        ) : (
+                          <p className="text-xl font-display font-black text-white uppercase italic">{band?.role || '—'}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-4">
+                        <label className="text-[10px] font-mono font-black text-gray-600 uppercase tracking-widest flex items-center gap-2">
+                          <MapPin size={12} /> Territorio Mainstream
+                        </label>
+                        <input
+                          type="text"
+                          value={band?.audience_location || ''}
+                          onChange={e => setBand({ ...band, audience_location: e.target.value })}
+                          disabled={!isEditing}
+                          placeholder="ej: Argentina"
+                          className="w-full bg-transparent border-b border-[var(--outline-variant)] py-2 text-xl font-display font-black text-white italic outline-none focus:border-[var(--primary)] disabled:opacity-50"
+                        />
+                      </div>
+                   </div>
                 </div>
 
-                {/* Role */}
-                <div className={`border-l-2 transition-all ${isEditing ? 'border-l-[var(--secondary)]' : 'border-l-transparent'}`}>
-                  <label className="label-tech ml-4">Tipo de Entidad</label>
-                  {isEditing ? (
-                    <select
-                      value={band?.role || ''}
-                      onChange={e => setBand({ ...band, role: e.target.value })}
-                      className="w-full bg-[var(--surface-highest)] ml-4 mt-2 p-3 text-white font-mono font-black text-sm outline-none border border-[var(--outline-variant)] focus:border-[var(--secondary)] uppercase rounded-sm appearance-none"
-                    >
-                      <option value="">Seleccionar Rol...</option>
-                      {ROLE_OPTIONS.map(r => <option key={r} value={r}>{r}</option>)}
-                    </select>
-                  ) : (
-                    <p className="p-4 ml-4 text-xl font-display font-black text-gray-400 uppercase italic">
-                      {band?.role || '—'}
-                    </p>
-                  )}
+                <div className="surface-card p-8">
+                  <span className="text-[10px] font-mono font-black text-gray-600 uppercase tracking-widest mb-6 block">Géneros Musicales</span>
+                  <div className="flex flex-wrap gap-2">
+                    {GENRE_OPTIONS.map(genre => {
+                      const isSelected = (Array.isArray(band?.genre) ? band.genre : (band?.genre || '').split(', ')).includes(genre);
+                      return (
+                        <button
+                          key={genre}
+                          onClick={() => {
+                            if (!isEditing) return;
+                            const current = Array.isArray(band.genre) ? band.genre : (band.genre || '').split(', ').filter(Boolean);
+                            const next = isSelected ? current.filter(g => g !== genre) : [...current, genre].slice(0, MAX_GENRES);
+                            setBand({ ...band, genre: next });
+                          }}
+                          disabled={!isEditing && !isSelected}
+                          className={`px-3 py-1.5 text-[9px] font-mono font-black uppercase tracking-widest border transition-all
+                            ${isSelected 
+                              ? 'bg-[var(--secondary)]/20 border-[var(--secondary)]/50 text-[var(--secondary)]' 
+                              : 'border-[var(--outline-variant)] text-gray-700 hover:text-gray-400 opacity-60'}
+                            ${!isEditing && !isSelected ? 'hidden' : ''}`}
+                        >
+                          {genre}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
+              </div>
 
-                {/* Audience Age */}
-                <div className={`border-l-2 transition-all ${isEditing ? 'border-l-[var(--primary)]' : 'border-l-transparent'}`}>
-                  <label className="label-tech ml-4 flex items-center gap-2"><Users size={10} /> Rango de Edad Audiencia</label>
+              <div className="space-y-6">
+                <div className="surface-card p-8 bg-black border border-[var(--outline-variant)]">
+                  <Users size={24} className="text-[var(--primary)] mb-4" />
+                  <p className="text-[10px] font-mono font-black text-gray-600 uppercase tracking-widest">Rango de Edad Target</p>
                   <input
                     type="text"
                     value={band?.audience_age_range || ''}
                     onChange={e => setBand({ ...band, audience_age_range: e.target.value })}
                     disabled={!isEditing}
-                    placeholder="ej: 18-30"
-                    className="w-full bg-transparent p-4 ml-4 text-xl font-mono font-black text-white outline-none disabled:opacity-70 placeholder:text-gray-800"
+                    placeholder="ej: 18-35"
+                    className="bg-transparent border-none text-2xl font-display font-black text-white italic outline-none w-full mt-2"
                   />
-                </div>
-
-                {/* Audience Location */}
-                <div className={`border-l-2 transition-all ${isEditing ? 'border-l-[var(--primary)]' : 'border-l-transparent'}`}>
-                  <label className="label-tech ml-4 flex items-center gap-2"><MapPin size={10} /> Ubicación Audiencia</label>
-                  <input
-                    type="text"
-                    value={band?.audience_location || ''}
-                    onChange={e => setBand({ ...band, audience_location: e.target.value })}
-                    disabled={!isEditing}
-                    placeholder="ej: CABA, Argentina"
-                    className="w-full bg-transparent p-4 ml-4 text-xl font-mono font-black text-white outline-none disabled:opacity-70 placeholder:text-gray-800"
-                  />
+                  <p className="text-[8px] font-mono text-gray-700 uppercase mt-4">IA utiliza esto para calibrar modismos y canales.</p>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
-          {/* ── Genres ── */}
-          <div className="surface-card p-8">
-            <GenreSelector
-              selected={genreArray}
-              onChange={val => setBand({ ...band, genre: val })}
-              isEditing={isEditing}
-            />
-          </div>
-
-          {/* ── ADN Tags: Tono & Valores ── */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="surface-card p-8 border-t-2 border-t-[var(--primary)]">
-              <div className="flex items-center gap-3 mb-6">
-                <Zap size={16} className="text-[var(--primary)]" />
-                <h3 className="text-sm font-display font-black text-white uppercase tracking-widest leading-none">Tono de Voz</h3>
-              </div>
-              <TagSelector
-                label="Selecciona hasta 3 etiquetas de Tono"
-                options={TONE_OPTIONS}
-                selected={band?.tone_keywords || []}
-                onChange={val => setBand({ ...band, tone_keywords: val })}
-                isEditing={isEditing}
-              />
-            </div>
-
-            <div className="surface-card p-8 border-t-2 border-t-[var(--secondary)]">
-              <div className="flex items-center gap-3 mb-6">
-                <ShieldCheck size={16} className="text-[var(--secondary)]" />
-                <h3 className="text-sm font-display font-black text-white uppercase tracking-widest leading-none">Valores Core</h3>
-              </div>
-              <TagSelector
-                label="Selecciona hasta 3 etiquetas de Valores"
-                options={VALUES_OPTIONS}
-                selected={band?.values_keywords || []}
-                onChange={val => setBand({ ...band, values_keywords: val })}
-                isEditing={isEditing}
-              />
-            </div>
-          </div>
-
-          {/* ── IA Config: Auto-publish & Posts/day ── */}
-          <div className="surface-card p-8 border-l-4 border-l-[var(--primary)] bg-black">
-            <div className="flex items-center gap-3 mb-6">
-              <Brain size={16} className="text-[var(--primary)]" />
-              <h3 className="text-sm font-display font-black text-white uppercase tracking-widest">Motor de IA — Config</h3>
-            </div>
+          {/* 2. ENGINE TAB */}
+          {activeTab === 'engine' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Auto-publish toggle */}
-              <div className="flex items-center justify-between p-4 bg-white/5 border border-[var(--outline-variant)]">
-                <div>
-                  <p className="label-tech mb-0.5">Auto-Publicar</p>
-                  <p className="text-[9px] font-mono text-gray-600">Publicar posts aprobados automáticamente</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => isEditing && setBand({ ...band, auto_publish: !band?.auto_publish })}
-                  disabled={!isEditing}
-                  className={`transition-colors ${!isEditing ? 'opacity-50 cursor-default' : 'cursor-pointer'}`}
-                >
-                  {band?.auto_publish
-                    ? <ToggleRight size={36} className="text-[var(--secondary)]" />
-                    : <ToggleLeft size={36} className="text-gray-600" />
-                  }
-                </button>
+              <div className="surface-card p-8 border-l-2 border-l-[var(--primary)]">
+                <TagSelector
+                  label="Tono de Voz (Contextual)"
+                  options={TONE_OPTIONS}
+                  selected={band?.tone_keywords || []}
+                  onChange={val => setBand({ ...band, tone_keywords: val })}
+                  isEditing={isEditing}
+                />
+              </div>
+              <div className="surface-card p-8 border-l-2 border-l-[var(--secondary)]">
+                <TagSelector
+                  label="Valores & Estética Core"
+                  options={VALUES_OPTIONS}
+                  selected={band?.values_keywords || []}
+                  onChange={val => setBand({ ...band, values_keywords: val })}
+                  isEditing={isEditing}
+                />
               </div>
 
-              {/* Posts per day */}
-              <div className="p-4 bg-white/5 border border-[var(--outline-variant)]">
-                <label className="label-tech flex items-center gap-2">
-                  <Clock size={10} /> Posts por Día
-                </label>
-                <div className="flex items-center gap-4 mt-3">
-                  {isEditing ? (
-                    <>
+              <div className="md:col-span-2 surface-card p-8 bg-black">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div className="flex items-center justify-between p-6 border border-[var(--outline-variant)] bg-white/5">
+                      <div>
+                        <h4 className="text-xs font-mono font-black text-white uppercase tracking-widest">Auto-Publicar Signals</h4>
+                        <p className="text-[9px] font-mono text-gray-600 uppercase mt-1">Requiere aprobación manual de batch</p>
+                      </div>
+                      <button
+                        onClick={() => isEditing && setBand({ ...band, auto_publish: !band.auto_publish })}
+                        className={`transition-all ${!isEditing ? 'opacity-30' : ''}`}
+                      >
+                        {band?.auto_publish ? <ToggleRight size={40} className="text-[var(--secondary)]" /> : <ToggleLeft size={40} className="text-gray-700" />}
+                      </button>
+                    </div>
+
+                    <div className="p-6 border border-[var(--outline-variant)] bg-white/5 space-y-4">
+                      <div className="flex items-center justify-between">
+                         <h4 className="text-xs font-mono font-black text-white uppercase tracking-widest">Carga Semántica Diaria</h4>
+                         <span className="text-2xl font-display font-black text-[var(--primary)] italic">{band?.posts_per_day || 5}</span>
+                      </div>
                       <input
                         type="range" min="1" max="10"
                         value={band?.posts_per_day || 5}
-                        onChange={e => setBand({ ...band, posts_per_day: parseInt(e.target.value) })}
-                        className="flex-1 accent-[var(--primary)]"
+                        onChange={e => isEditing && setBand({ ...band, posts_per_day: parseInt(e.target.value) })}
+                        disabled={!isEditing}
+                        className="w-full accent-[var(--primary)] opacity-80"
                       />
-                      <span className="text-2xl font-display font-black text-white w-8 text-center">{band?.posts_per_day || 5}</span>
-                    </>
-                  ) : (
-                    <span className="text-3xl font-display font-black text-white">{band?.posts_per_day || 5}</span>
-                  )}
+                      <p className="text-[8px] font-mono text-gray-700 uppercase">Cantidad de posts/señales propuestas por el agente cada 24hs.</p>
+                    </div>
+                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* 3. NETWORKS TAB */}
+          {activeTab === 'networks' && (
+            <div className="space-y-8">
+              <div className="flex items-center justify-between px-2">
+                <div>
+                  <h3 className="text-lg font-display font-black text-white italic uppercase tracking-widest">Active Signal Nodes</h3>
+                  <p className="text-[9px] font-mono text-gray-600 uppercase tracking-widest">Puntos de inyección de contenido autenticados</p>
+                </div>
+                <div className="p-3 border border-[var(--primary)]/30 bg-[var(--primary)]/5 text-[var(--primary)] text-[9px] font-mono font-black uppercase">
+                   AES-256 Cloud Encrypted Connectivity
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {networks.length === 0 ? (
+                  <div className="lg:col-span-3 border-2 border-dashed border-[var(--outline-variant)] p-20 flex flex-col items-center justify-center text-gray-700">
+                    <Globe size={40} className="mb-4 opacity-20" />
+                    <p className="text-xs font-mono font-black uppercase tracking-widest">Sin nodos activos</p>
+                  </div>
+                ) : (
+                  networks.map(net => (
+                    <NetworkCard
+                      key={net.id}
+                      network={{ ...net, connected: net.is_active }}
+                      onConnect={handleConnect}
+                      onDisconnect={handleDisconnect}
+                    />
+                  ))
+                )}
+                {/* Add new node placeholder */}
+                <div className="surface-card border-dashed border-2 border-[var(--outline-variant)] flex flex-col items-center justify-center p-8 opacity-40 hover:opacity-100 hover:border-[var(--primary)] transition-all cursor-pointer">
+                   <Plus size={24} className="mb-2" />
+                   <span className="text-[9px] font-mono font-black uppercase tracking-widest">Deploy New Node</span>
                 </div>
               </div>
             </div>
-          </div>
-        </form>
+          )}
 
-        {/* ── Signal Chain Networks ── */}
-        <div className="space-y-8 pt-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Globe size={20} className="text-[var(--primary)]" />
-              <h3 className="text-xl font-display font-black text-white tracking-widest uppercase italic">Signal Chain Nodes</h3>
-            </div>
-            {availablePlatforms.length > 0 && (
-              <button onClick={() => setShowConnectModal(true)} className="btn-secondary py-2 px-6 text-xs">
-                <Plus size={14} /> Conectar Red
-              </button>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {networks.length === 0 ? (
-              <div
-                onClick={() => setShowConnectModal(true)}
-                className="border-2 border-dashed border-[var(--outline-variant)] p-12 flex flex-col items-center justify-center text-gray-700 hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all cursor-pointer group lg:col-span-3 min-h-[200px]"
-              >
-                <div className="w-12 h-12 border border-current flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><Plus size={24} /></div>
-                <p className="font-display font-black text-lg uppercase tracking-widest">Conectar Primera Red</p>
-              </div>
-            ) : (
-              networks.map(net => (
-                <NetworkCard
-                  key={net.id}
-                  network={{ ...net, connected: net.is_active }}
-                  onConnect={handleConnect}
-                  onScan={handleScan}
-                  onDisconnect={handleDisconnect}
-                />
-              ))
-            )}
-          </div>
         </div>
 
-        {/* ── Privacy Footer ── */}
-        <div className="surface-card p-8 bg-black border-l-4 border-l-[var(--secondary)] flex flex-col md:flex-row items-center gap-8">
-          <div className="p-5 bg-white/5 border border-[var(--outline-variant)]">
-            <ShieldCheck size={40} className="text-[var(--secondary)]" />
-          </div>
-          <div className="flex-1">
-            <h4 className="text-xl font-display font-black text-white italic uppercase mb-1">Protocolo de Privacidad Semántica</h4>
-            <p className="text-[10px] font-mono font-black text-gray-500 uppercase tracking-widest leading-relaxed max-w-2xl">
-              Tus datos de ADN se procesan mediante un modelo local privado. Las credenciales de red están encriptadas bajo arquitectura AES-256 e inyectadas solo en el momento de la publicación del Signal.
-            </p>
-          </div>
+        {/* ── Footer ── */}
+        <div className="pt-12 border-t border-[var(--outline-variant)] flex flex-col md:flex-row items-center justify-between gap-6 opacity-60">
+           <div className="flex items-center gap-4">
+              <ShieldCheck size={20} className="text-[var(--secondary)]" />
+              <p className="text-[9px] font-mono text-gray-700 uppercase tracking-widest max-w-sm">Tus datos de ADN se inyectan en el modelo de lenguaje de forma privada y segura.</p>
+           </div>
+           <div className="flex items-center gap-6">
+             <span className="text-[8px] font-mono text-gray-800 uppercase tracking-widest">Engine: v2.4 Universal</span>
+             <span className="text-[8px] font-mono text-gray-800 uppercase tracking-widest">Synced: {new Date().toISOString().split('T')[0]}</span>
+           </div>
         </div>
+
       </div>
-
-      {/* ── Connect Modal ── */}
-      {showConnectModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/95 backdrop-blur-xl">
-          <div className="bg-[var(--surface-high)] border border-[#484849]/30 rounded-sm p-10 max-w-lg w-full relative shadow-[0_0_80px_rgba(0,0,0,0.8)]">
-            <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)]" />
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <span className="label-tech mb-1">Autenticar Nodo</span>
-                <h2 className="text-3xl font-display font-black text-white uppercase italic leading-none">Nueva Red</h2>
-              </div>
-              <button onClick={() => setShowConnectModal(false)} className="text-gray-600 hover:text-white transition-colors">
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              {availablePlatforms.map(({ key, label, Icon }) => (
-                <button
-                  key={key}
-                  onClick={() => handleConnect(key)}
-                  className="w-full flex items-center gap-5 p-5 border border-[var(--outline-variant)] hover:border-[var(--primary)]/50 hover:bg-[var(--primary)]/5 transition-all group text-left"
-                >
-                  <div className="p-2 bg-white/5 border border-[var(--outline-variant)] group-hover:border-[var(--primary)]/30">
-                    <Icon size={18} className="text-gray-500 group-hover:text-[var(--primary)]" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-mono font-black text-white uppercase tracking-widest">{label}</p>
-                    <p className="text-[9px] font-mono text-gray-600 mt-0.5">OAuth 2.0 · Secure Connection</p>
-                  </div>
-                  <ArrowUpRight size={14} className="ml-auto text-gray-700 group-hover:text-[var(--primary)] transition-colors" />
-                </button>
-              ))}
-            </div>
-
-            {connectedPlatforms.size > 0 && (
-              <p className="mt-6 text-[9px] font-mono text-gray-700 text-center uppercase tracking-widest">
-                {connectedPlatforms.size} plataforma(s) ya conectada(s) — no disponibles
-              </p>
-            )}
-          </div>
-        </div>
-      )}
     </Layout>
   );
 };
