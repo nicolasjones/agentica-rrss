@@ -5,6 +5,17 @@
 
 ---
 
+## Strategic Planner V4 — Fase 1 & 2: Integración DB/Alembic
+
+**Fecha**: 2026-04-04
+
+### L0 — Base.metadata.create_all adelanta el tracker de Alembic
+**Qué pasó**: El backend usa `Base.metadata.create_all()` en startup para crear tablas automáticamente. Cuando Alembic intenta correr la migración `a1b2c3d4e5f6`, los enums y tablas ya existen en PostgreSQL → `DuplicateObjectError: type "eventcategory" already exists`.
+**Por qué importa**: El historial de versiones de Alembic queda desfasado de la DB real. Alembic cree estar en rev `5600a3685d5e` pero la DB tiene tablas de `a1b2c3d4e5f6`.
+**Cómo aplicar**: Usar `alembic stamp <rev>` para sincronizar el tracker sin re-ejecutar DDL. En producción, deshabilitar `create_all` y confiar 100% en Alembic. El `create_all` solo es seguro en entornos de test con DB descartable.
+
+---
+
 ## Strategic Planner V4 — Fase 1: Backend Foundations
 
 **Fecha**: 2026-04-03
