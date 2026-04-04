@@ -7,6 +7,8 @@ import BatchReview from '../components/BatchReview';
 import PlatformSelector from '../components/PlatformSelector';
 import StrategistAssistant from '../components/StrategistAssistant';
 import PulseWidget from '../components/PulseWidget';
+import PostDetailModal from '../components/PostDetailModal';
+import EventQuickAdd from '../components/EventQuickAdd';
 import { useActiveProject } from '../context/ActiveProjectContext';
 import { eventsAPI, plannerAPI } from '../services/api';
 
@@ -21,7 +23,7 @@ const Planner = () => {
 
   const [events, setEvents] = useState([]);
   const [batch, setBatch] = useState(null);
-  const [view, setView] = useState('calendar'); // calendar | list
+  const [view, setView] = useState('calendar');
   const [timeframe, setTimeframe] = useState('weekly');
   const [generating, setGenerating] = useState(false);
   const [approving, setApproving] = useState(false);
@@ -29,10 +31,13 @@ const Planner = () => {
   const [error, setError] = useState(null);
   const [selectedPlatforms, setSelectedPlatforms] = useState(['instagram', 'facebook', 'tiktok', 'youtube']);
   const [showAssistant, setShowAssistant] = useState(false);
-  const [batchMode, setBatchMode] = useState('strategy'); // 'strategy' | 'production'
+  const [batchMode, setBatchMode] = useState('strategy');
   const [generatingSignals, setGeneratingSignals] = useState(false);
   const [pulse, setPulse] = useState(null);
   const [pulseLoading, setPulseLoading] = useState(false);
+  const [modalState, setModalState] = useState({ open: false, post: null, date: null });
+
+  const bandName = batch?.band?.name || '';
 
   const loadEvents = useCallback(async () => {
     if (!activeBandId) return;
@@ -133,7 +138,6 @@ const Planner = () => {
   };
 
   const handleRejectPost = (postId) => {
-    // Fire-and-forget learning trigger — concept rejection feeds the ADN loop
     plannerAPI.rejectConcept(postId, activeBandId).catch(() => {});
     setBatch(b => ({
       ...b,
@@ -166,6 +170,49 @@ const Planner = () => {
     }
   };
 
+  const handleOpenModal = (post, date) => {
+    setModalState({ open: true, post: post || null, date: date || null });
+  };
+
+  const handleCloseModal = () => {
+    setModalState({ open: false, post: null, date: null });
+  };
+
+  const handleSavePost = async (postId, fields) => {
+    try {
+      if (postId == null) {
+        const res = await plannerAPI.manualDraft(activeBandId, fields);
+        setBatch(b => b ? { ...b, posts: [...(b.posts || []), res.data] } : b);
+      } else {
+        const res = await plannerAPI.updatePost(postId, activeBandId, fields);
+        setBatch(b => b ? {
+          ...b,
+          posts: b.posts.map(p => p.id === postId ? { ...p, ...res.data } : p),
+        } : b);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDeletePost = async (postId) => {
+    try {
+      await plannerAPI.deletePost(postId, activeBandId);
+      setBatch(b => b ? { ...b, posts: b.posts.filter(p => p.id !== postId) } : b);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleModalSave = (fields) => {
+    const postId = modalState.post?.id || null;
+    handleSavePost(postId, fields);
+  };
+
+  const handleModalDelete = (postId) => {
+    handleDeletePost(postId);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[var(--surface)] flex items-center justify-center p-12">
@@ -185,7 +232,6 @@ const Planner = () => {
 
         {/* ── Control Bar ── */}
         <div className="flex flex-wrap items-center justify-between gap-4">
-          {/* View toggle */}
           <div className="flex border border-[var(--outline-variant)] rounded-sm overflow-hidden">
             <button
               onClick={() => setView('calendar')}
@@ -203,7 +249,6 @@ const Planner = () => {
             </button>
           </div>
 
-          {/* Mode toggle MAPA / SEÑAL */}
           {batch && (
             <div className="flex border border-[var(--outline-variant)] rounded-sm overflow-hidden">
               <button
@@ -223,8 +268,13 @@ const Planner = () => {
             </div>
           )}
 
-          {/* Platform selector + Timeframe + Assistant + Generate */}
           <div className="flex flex-wrap items-center gap-3">
+            <EventQuickAdd
+              bandId={activeBandId}
+              bandName={bandName}
+              onEventsCreated={loadEvents}
+            />
+
             <PlatformSelector selected={selectedPlatforms} onChange={setSelectedPlatforms} />
 
             <select
@@ -269,13 +319,14 @@ const Planner = () => {
         {/* ── Main Grid ── */}
         <div className={`grid grid-cols-1 gap-8 ${showAssistant ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
 
-          {/* Left: Calendar / Event List */}
           <div className="lg:col-span-1 space-y-6">
             {view === 'calendar' && (
               <CalendarView
                 events={events}
                 posts={batch?.posts || []}
                 mode={batchMode}
+                onPostClick={(post) => handleOpenModal(post, null)}
+                onAddPost={(date) => handleOpenModal(null, date)}
               />
             )}
             <EventList
@@ -285,7 +336,6 @@ const Planner = () => {
             />
           </div>
 
-          {/* Center: Batch Review */}
           <div className={showAssistant ? 'lg:col-span-2' : 'lg:col-span-2'}>
             {batch ? (
               <BatchReview
@@ -309,7 +359,6 @@ const Planner = () => {
             )}
           </div>
 
-          {/* Right: Strategist Assistant (conditional) */}
           {showAssistant && (
             <div className="lg:col-span-1 animate-in fade-in slide-in-from-right-4 duration-300">
               <StrategistAssistant
@@ -321,6 +370,16 @@ const Planner = () => {
         </div>
 
       </div>
+
+      {modalState.open && (
+        <PostDetailModal
+          post={modalState.post}
+          initialDate={modalState.date}
+          onSave={handleModalSave}
+          onDelete={handleModalDelete}
+          onClose={handleCloseModal}
+        />
+      )}
     </Layout>
   );
 };

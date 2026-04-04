@@ -107,6 +107,8 @@ export const eventsAPI = {
   list: (bandId) => api.get('/events/', { params: { band_id: bandId } }),
   create: (bandId, data) => api.post(`/events/?band_id=${bandId}`, data),
   delete: (eventId) => api.delete(`/events/${eventId}`),
+  interpret: (text, bandName, bandId) =>
+    api.post(`/events/interpret?band_id=${bandId}`, { message: text, band_name: bandName }),
 };
 
 // ─── Planner ─────────────────────────────────────
@@ -122,6 +124,9 @@ export const plannerAPI = {
   pulse: (bandId) => api.get('/planner/pulse', { params: { band_id: bandId } }),
   rejectConcept: (postId, bandId, reason = 'other') =>
     api.post(`/planner/reject-concept?post_id=${postId}&band_id=${bandId}&reason=${reason}`),
+  manualDraft: (bandId, payload) => api.post(`/planner/manual-draft?band_id=${bandId}`, payload),
+  updatePost: (postId, bandId, payload) => api.patch(`/planner/posts/${postId}?band_id=${bandId}`, payload),
+  deletePost: (postId, bandId) => api.delete(`/planner/posts/${postId}?band_id=${bandId}`),
 };
 
 export default api;

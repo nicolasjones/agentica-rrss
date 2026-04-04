@@ -14,7 +14,10 @@ from app.models.models import (
     BatchStatus, GeneratedPost, PostStatus, PlatformType,
     ContentPattern, PatternStatus, LearningLog, LearningEventType,
 )
-from app.schemas.schemas import StrategicBatchRead, RefinePostRequest
+from app.schemas.schemas import (
+    StrategicBatchRead, RefinePostRequest,
+    ManualDraftCreate, StrategicPostRead, StrategicPostUpdate,
+)
 from app.core.security import get_current_user_id
 from app.services.ai.ai_planner import get_ai_planner
 
@@ -286,3 +289,95 @@ async def refine_post(
     await db.refresh(sp)
 
     return {"id": sp.id, "caption": sp.caption, "hashtags": sp.hashtags}
+
+
+@router.post("/manual-draft", response_model=StrategicPostRead)
+async def create_manual_draft(
+    band_id: int,
+    payload: ManualDraftCreate,
+    user_id: int = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    V5 — Manual Draft: create a strategic post directly (no AI generation).
+    Creates or reuses a MANUAL_DRAFT batch for the band, then adds the post.
+    """
+    await _assert_band_owner(band_id, user_id, db)
+
+    # Find or create the band's active manual-draft batch
+    result = await db.execute(
+        select(StrategicBatch).where(
+            StrategicBatch.band_id == band_id,
+            StrategicBatch.status == BatchStatus.MANUAL_DRAFT,
+        )
+    )
+    batch = result.scalar_one_or_none()
+    if not batch:
+        batch = StrategicBatch(
+            band_id=band_id,
+            timeframe="manual",
+            status=BatchStatus.MANUAL_DRAFT,
+        )
+        db.add(batch)
+        await db.flush()
+
+    post = StrategicPost(
+        batch_id=batch.id,
+        platform=payload.platform,
+        concept_title=payload.concept_title,
+        narrative_goal=payload.narrative_goal,
+        caption=payload.caption,
+        hashtags=payload.hashtags or [],
+        scheduled_date=payload.scheduled_date,
+        scheduled_time=payload.scheduled_time,
+        is_manual=True,
+        is_approved=False,
+    )
+    db.add(post)
+    await db.commit()
+    await db.refresh(post)
+    return post
+
+
+@router.patch("/posts/{post_id}", response_model=StrategicPostRead)
+async def update_post(
+    post_id: int,
+    band_id: int,
+    payload: StrategicPostUpdate,
+    user_id: int = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """V5 — Edit a strategic post's content, schedule, or approval from the PostDetailModal."""
+    await _assert_band_owner(band_id, user_id, db)
+
+    result = await db.execute(select(StrategicPost).where(StrategicPost.id == post_id))
+    sp = result.scalar_one_or_none()
+    if not sp:
+        raise HTTPException(status_code=404, detail="Strategic post not found")
+
+    for field, value in payload.model_dump(exclude_unset=True).items():
+        setattr(sp, field, value)
+
+    await db.commit()
+    await db.refresh(sp)
+    return sp
+
+
+@router.delete("/posts/{post_id}")
+async def delete_post(
+    post_id: int,
+    band_id: int,
+    user_id: int = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """V5 — Delete a strategic post from the PostDetailModal."""
+    await _assert_band_owner(band_id, user_id, db)
+
+    result = await db.execute(select(StrategicPost).where(StrategicPost.id == post_id))
+    sp = result.scalar_one_or_none()
+    if not sp:
+        raise HTTPException(status_code=404, detail="Strategic post not found")
+
+    await db.delete(sp)
+    await db.commit()
+    return {"deleted": True, "post_id": post_id}

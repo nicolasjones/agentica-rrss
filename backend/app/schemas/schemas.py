@@ -3,8 +3,8 @@ AGENMATICA - Pydantic Schemas
 Request/Response models for the API.
 """
 
-from datetime import datetime
-from typing import Optional
+from datetime import datetime, date, time
+from typing import Optional, List
 from pydantic import BaseModel, Field, ConfigDict
 
 
@@ -41,19 +41,25 @@ class UserResponse(BaseModel):
 # ─── Band ────────────────────────────────────────────
 
 class BandCreate(BaseModel):
-    name: str = Field(..., example="Sientes")
-    genre: Optional[str] = Field(None, example="Rock Alternativo")
-    audience_age_range: Optional[str] = Field(None, example="18-30")
-    audience_location: Optional[str] = Field(None, example="CABA, Argentina")
-    tone_keywords: Optional[list[str]] = Field(None, example=["sarcastic", "energetic"])
-    values_keywords: Optional[list[str]] = Field(None, example=["authenticity", "DIY"])
+    name: str = Field(..., json_schema_extra={"example": "Sientes"})
+    genre: Optional[str] = Field(None, json_schema_extra={"example": "Rock Alternativo"})
+    audience_age_min: int = Field(18, ge=0, le=120)
+    audience_age_max: int = Field(35, ge=0, le=120)
+    audience_country: Optional[str] = Field(None, json_schema_extra={"example": "Argentina"})
+    audience_province: Optional[str] = Field(None, json_schema_extra={"example": "Mendoza"})
+    use_regional_slang: bool = False
+    tone_keywords: Optional[list[str]] = Field(None, json_schema_extra={"example": ["sarcastic", "energetic"]})
+    values_keywords: Optional[list[str]] = Field(None, json_schema_extra={"example": ["authenticity", "DIY"]})
 
 
 class BandUpdate(BaseModel):
     name: Optional[str] = None
     genre: Optional[str] = None
-    audience_age_range: Optional[str] = None
-    audience_location: Optional[str] = None
+    audience_age_min: Optional[int] = Field(None, ge=0, le=120)
+    audience_age_max: Optional[int] = Field(None, ge=0, le=120)
+    audience_country: Optional[str] = None
+    audience_province: Optional[str] = None
+    use_regional_slang: Optional[bool] = None
     tone_keywords: Optional[list[str]] = None
     values_keywords: Optional[list[str]] = None
     auto_publish: Optional[bool] = None
@@ -65,8 +71,11 @@ class BandResponse(BaseModel):
     name: str
     plan: str
     genre: Optional[str]
-    audience_age_range: Optional[str]
-    audience_location: Optional[str]
+    audience_age_min: int
+    audience_age_max: int
+    audience_country: Optional[str]
+    audience_province: Optional[str]
+    use_regional_slang: bool
     tone_keywords: Optional[list[str]]
     values_keywords: Optional[list[str]]
     confidence_score: float
@@ -74,8 +83,7 @@ class BandResponse(BaseModel):
     posts_per_day: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class BandProfileResponse(BaseModel):
@@ -91,8 +99,9 @@ class BandProfileResponse(BaseModel):
 # ─── Network ─────────────────────────────────────────
 
 class NetworkConnect(BaseModel):
-    platform: str = Field(..., example="instagram")
+    platform: Optional[str] = Field(None, example="instagram")
     oauth_code: Optional[str] = None  # For OAuth flow
+    handle: Optional[str] = None      # For mock or manual handle override
 
 
 class NetworkResponse(BaseModel):
@@ -148,12 +157,27 @@ class PostRejectRequest(BaseModel):
     reason: str = Field(..., min_length=5, example="Too corporate, doesn't sound like us")
 
 
+class CreatePostFromDraft(BaseModel):
+    band_id: int
+    caption: str
+    target_platform: str = "instagram"
+
+
 class TodayPostsResponse(BaseModel):
     band_id: int
     band_name: str
     date: str
     posts: list[GeneratedPostResponse]
     approval_rate_current: float  # Current overall approval rate
+
+
+class DashboardPulse(BaseModel):
+    band_id: int
+    confidence_score: float
+    current_draft_preview: str
+    active_nodes: list[str] = []
+    regional_status: str
+    pending_posts_count: int
 
 
 # ─── Analytics ───────────────────────────────────────
@@ -307,3 +331,97 @@ class AggregatedAnalytics(BaseModel):
     project_count: int
     avg_confidence: float
     global_growth_week: float
+
+
+# ─── Strategic Planner ───────────────────────────────
+
+class EcosystemEventCreate(BaseModel):
+    title: str = Field(..., example="Show en Niceto Club")
+    description: Optional[str] = None
+    event_date: date
+    category: str = Field("other", example="gig")
+
+
+class EcosystemEventRead(BaseModel):
+    id: int
+    band_id: int
+    title: str
+    description: Optional[str]
+    event_date: date
+    category: str
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class StrategicPostRead(BaseModel):
+    id: int
+    batch_id: int
+    event_id: Optional[int] = None
+    parent_post_id: Optional[int] = None
+    platform: str
+    
+    # Phase 1: Ideation
+    concept_title: Optional[str] = None
+    narrative_goal: Optional[str] = None
+    
+    # Phase 2: Signal
+    caption: Optional[str] = None
+    hashtags: Optional[List[str]] = None
+    
+    scheduled_date: Optional[date] = None
+    scheduled_time: Optional[time] = None
+    is_approved: bool
+    is_manual: bool = False
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ManualDraftCreate(BaseModel):
+    platform: str
+    concept_title: Optional[str] = None
+    narrative_goal: Optional[str] = None
+    caption: Optional[str] = None
+    hashtags: Optional[List[str]] = None
+    scheduled_date: Optional[date] = None
+    scheduled_time: Optional[time] = None
+
+
+class StrategicPostUpdate(BaseModel):
+    concept_title: Optional[str] = None
+    narrative_goal: Optional[str] = None
+    caption: Optional[str] = None
+    hashtags: Optional[List[str]] = None
+    scheduled_date: Optional[date] = None
+    scheduled_time: Optional[time] = None
+    is_approved: Optional[bool] = None
+
+
+class StrategicBatchCreate(BaseModel):
+    timeframe: str = Field("weekly", example="weekly")
+
+
+class StrategicBatchRead(BaseModel):
+    id: int
+    band_id: int
+    status: str
+    timeframe: str
+    created_at: datetime
+    posts: List[StrategicPostRead] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class RefinePostRequest(BaseModel):
+    post_id: int
+    feedback: str = Field(..., example="Hacelo más épico y agresivo")
+
+
+class InterpretMessageRequest(BaseModel):
+    message: str = Field(..., example="Tengo 3 shows la próxima semana: viernes 11, sábado 12 y domingo 13")
+
+
+class InterpretMessageResponse(BaseModel):
+    reply: str
+    events: List[EcosystemEventCreate] = []
