@@ -32,11 +32,12 @@ Esta sección es el **corazón del sistema**. Cualquier cambio aquí redefine la
 - Al pulsar **"EDITAR ADN"** se activa el modo edición y se habilitan todos los inputs.
 - Los cambios se aplican solo al pulsar **"GUARDAR ADN"**. Un botón "Cancelar" revierte al estado original con un `loadData()`.
 
-#### 🧬 Configuración de Identidad
-- **Nombre de la Entidad**: Campo de texto libre para el nombre del artista/marca.
+#### 🧬 Configuración de Identidad (Pestaña "Identidad")
+- **Nombre de la Entidad**: Campo de texto libre para el nombre del artista/marca. Incluye HelpTooltip explicativo.
 - **Tipo de Entidad (Rol)**: Selector de rol (Cantante, Banda, Productor, DJ, Sello Discográfico, Manager, Colectivo, Agencia).
-- **Rango de Edad de Audiencia**: Input libre (ej. `18-30`).
-- **Ubicación de Audiencia**: Input libre (ej. `CABA, Argentina`).
+- **Rango de Edad de Audiencia**: Dos selectores numéricos independientes (**Mínimo** y **Máximo**) con rango predefinido (13-100+).
+- **Localización de Audiencia**: Sistema de selectores anidados (**País** y **Provincia/Estado**). Al seleccionar un país, se cargan dinámicamente sus subdivisiones. Incluye países de LATAM, España y EEUU.
+- **Modismos Regionales (Slang)**: Toggle para activar/desactivar la adaptación del lenguaje a la jerga típica de la provincia seleccionada.
 
 #### 🎵 Géneros Musicales
 - Selección múltiple de chips desde un listado predefinido.
@@ -50,9 +51,11 @@ Esta sección es el **corazón del sistema**. Cualquier cambio aquí redefine la
 - **Eliminación**: En Modo Edición, clic en un tag activo lo remueve.
 - **Validación**: No se puede guardar si cualquier categoría supera 3 etiquetas.
 
-#### 🤖 Motor de IA — Config
-- **Toggle Auto-Publicar**: Switch que activa/desactiva la publicación automática de los posts aprobados.
-- **Posts por Día**: Slider de rango 1-10 que configura el volumen de generación diaria.
+#### 🤖 Motor de IA — Config (Pestaña "Configuración IA")
+- **IA Match Rate**: Indicador visual (%) de qué tan bien la IA entiende la marca. Incluye HelpTooltip.
+- **Toggle Auto-Publicar**: Switch que activa/desactiva la publicación automática de los posts aprobados. Incluye HelpTooltip.
+- **Posts por Día (Frecuencia de Señal)**: Slider de rango 1-10 que configura el volumen de generación diaria. Incluye HelpTooltip.
+- **ADN Agenmatica (Tags de Tono & Valores)**: Reubicados en esta pestaña para mayor enfoque técnico.
 
 #### 📡 Gestión de Redes (Signal Chain)
 - **Listar Redes**: Muestra todas las redes conectadas y desconectadas en un grid de cards.
@@ -86,3 +89,4 @@ Esta sección es el **corazón del sistema**. Cualquier cambio aquí redefine la
 3. **Persistencia de Tokens**: Las credenciales OAuth se almacenan en la DB. El flujo actual usa un conector Mock; OAuth real es backlog.
 4. **Hard-Reset de Red**: Al borrar una red (`DELETE /networks/{id}`), se eliminan todos los `ContentPosts` asociados para no viciar el motor con datos de una red desconectada.
 5. **Estado de Edición**: El perfil no puede ser modificado accidentalmente — requiere activación explícita del Modo Edición.
+6. **Mandato de Infraestructura (Docker)**: Todo desarrollo y ejecución DEBE realizarse mediante Docker Compose. No se permite la ejecución nativa de servicios fuera de contenedores para asegurar la paridad de entornos.

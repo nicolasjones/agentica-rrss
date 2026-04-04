@@ -80,6 +80,22 @@
 
 ---
 
+## Strategic Planner V4 — Fase 4: Bucle ADN & Pulse
+
+**Fecha**: 2026-04-04
+
+### L9 — Fire-and-forget para learning triggers de UI
+**Qué pasó**: El rechazo de un concepto dispara `POST /planner/reject-concept` desde `handleRejectPost`. Si ese call falla (red, 404), no debe bloquear la UI — el artista ya rechazó el post localmente.
+**Por qué importa**: Los errores de telemetría no deben degradar la experiencia principal de edición.
+**Cómo aplicar**: Usar `.catch(() => {})` para side-effects de aprendizaje que no son críticos para el flujo. Loguear en consola si se quiere visibilidad, pero no propagar el error al usuario.
+
+### L10 — Pulse como snapshot estático, no tiempo real
+**Qué pasó**: El widget Pulse se carga una vez en `init()` junto con eventos y batches. No tiene polling.
+**Por qué importa**: El `confidence_score` del ADN cambia lentamente (tras análisis de engagement). Pollear cada segundo sería gasto de tokens y red sin valor.
+**Cómo aplicar**: Para métricas de ADN que evolucionan por sesión/día, un fetch al montar el componente es suficiente. Agregar `loadPulse()` tras operaciones que cambian el ADN (approve-batch) si se quiere actualización reactiva.
+
+---
+
 ## Patrones Globales
 
 ### P1 — OpenSpec workflow: proposal → spec → design → tasks → implement → archive

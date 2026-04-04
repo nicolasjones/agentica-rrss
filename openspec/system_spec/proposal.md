@@ -36,3 +36,9 @@ La IA genera drafts de posts. El usuario actúa como **Director Creativo**: apru
 
 ## 🎨 Diseño: "The Electric Circuitry of Chaos"
 La plataforma usa un sistema de diseño propio de estética **Neon Grunge / Obsidian** con paleta de colores `#0e0e0f` (negro obsidiana), `#cc97ff` (electric purple), `#6bff8f` (toxic green). Tipografía: Epilogue (display), Inter (body), Space Grotesk (mono). Ver `DESIGN.md` para la especificación completa.
+
+## 💻 Mandato de Infraestructura (Docker-First)
+Para garantizar la estabilidad del sistema, la portabilidad entre arquitecturas y la paridad de entornos:
+- **Ejecución obligatoria en Docker**: Todo el ecosistema de Agenmatica (Backend, Frontend, Workers, Redis, RabbitMQ, PostgreSQL con pgvector) debe ejecutarse y desarrollarse exclusivamente a través de contenedores gestionados por `docker-compose`.
+- **Despliegue**: No se permite la instalación manual de dependencias locales de base de datos o servicios. Cualquier cambio en la arquitectura debe reflejarse en el `docker-compose.yml` y el `Dockerfile`.
+- **Pruebas**: Los tests unitarios y de integración deben ejecutarse dentro de los contenedores para asegurar que el entorno de testing coincida exactamente con el de ejecución.

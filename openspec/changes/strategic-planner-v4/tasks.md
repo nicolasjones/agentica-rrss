@@ -28,10 +28,10 @@
 
 ---
 
-## 🔄 Fase 4: Bucle ADN & Telemetría _(backlog V5)_
+## ✅ Fase 4: Bucle ADN & Telemetría
 
-11. [ ] **[Pulse]** — Widget de Confianza de ADN en header del Planner.
-12. [ ] **[Learning]** — Disparador de aprendizaje tras rechazo de concepto estratégico.
+11. [x] **[Pulse]** — `GET /planner/pulse` + `PulseWidget.jsx` en header del Planner. Muestra confidence_score, regional_sync y active_nodes (top-5 ContentPatterns).
+12. [x] **[Learning]** — `POST /planner/reject-concept` crea `LearningLog(POST_REJECTED)` al rechazar un concepto. Fire-and-forget desde handleRejectPost.
 
 ---
 
