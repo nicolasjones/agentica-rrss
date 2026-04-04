@@ -12,6 +12,7 @@ from app.db.session import get_db
 from app.models.models import (
     Band, EcosystemEvent, StrategicBatch, StrategicPost,
     BatchStatus, GeneratedPost, PostStatus, PlatformType,
+    ContentPattern, PatternStatus, LearningLog, LearningEventType,
 )
 from app.schemas.schemas import StrategicBatchRead, RefinePostRequest
 from app.core.security import get_current_user_id
@@ -188,6 +189,72 @@ async def approve_batch(
     batch.status = BatchStatus.ACCEPTED
     await db.commit()
     return {"promoted_posts": promoted, "batch_id": batch_id, "status": "accepted"}
+
+
+@router.get("/pulse")
+async def get_pulse(
+    band_id: int,
+    user_id: int = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Phase 4 — Telemetría Pulse.
+    Returns ADN confidence score, regional sync status, and active content pattern nodes.
+    Displayed in the Planner header to give the artist a 'command' context of their AI profile.
+    """
+    band = await _assert_band_owner(band_id, user_id, db)
+
+    patterns_result = await db.execute(
+        select(ContentPattern)
+        .where(ContentPattern.band_id == band_id, ContentPattern.status == PatternStatus.ACTIVE)
+        .order_by(ContentPattern.confidence.desc())
+        .limit(5)
+    )
+    active_patterns = patterns_result.scalars().all()
+
+    return {
+        "confidence_score": round(band.confidence_score or 0.0, 2),
+        "regional_sync": bool(band.use_regional_slang),
+        "active_nodes": [
+            {"name": p.pattern_name, "type": p.pattern_type, "confidence": round(p.confidence or 0.0, 2)}
+            for p in active_patterns
+        ],
+    }
+
+
+@router.post("/reject-concept")
+async def reject_concept(
+    post_id: int,
+    band_id: int,
+    reason: str = "other",
+    user_id: int = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Phase 4 — Learning trigger.
+    Called when a user rejects a concept (MAPA phase).
+    Creates a LearningLog entry so the ADN can adapt tone/strategy over time.
+    """
+    await _assert_band_owner(band_id, user_id, db)
+
+    result = await db.execute(select(StrategicPost).where(StrategicPost.id == post_id))
+    sp = result.scalar_one_or_none()
+    if not sp:
+        raise HTTPException(status_code=404, detail="Strategic post not found")
+
+    db.add(LearningLog(
+        band_id=band_id,
+        event_type=LearningEventType.POST_REJECTED,
+        data={
+            "post_id": post_id,
+            "concept_title": sp.concept_title,
+            "narrative_goal": sp.narrative_goal,
+            "reason": reason,
+        },
+        impact_score=0.3,
+    ))
+    await db.commit()
+    return {"logged": True, "event_type": "post_rejected", "post_id": post_id}
 
 
 @router.post("/refine-post", response_model=dict)

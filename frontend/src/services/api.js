@@ -119,6 +119,9 @@ export const plannerAPI = {
   approveBatch: (batchId) => api.post(`/planner/approve-batch?batch_id=${batchId}`),
   refinePost: (bandId, postId, feedback) =>
     api.post(`/planner/refine-post?band_id=${bandId}`, { post_id: postId, feedback }),
+  pulse: (bandId) => api.get('/planner/pulse', { params: { band_id: bandId } }),
+  rejectConcept: (postId, bandId, reason = 'other') =>
+    api.post(`/planner/reject-concept?post_id=${postId}&band_id=${bandId}&reason=${reason}`),
 };
 
 export default api;

@@ -6,6 +6,7 @@ import EventList from '../components/EventList';
 import BatchReview from '../components/BatchReview';
 import PlatformSelector from '../components/PlatformSelector';
 import StrategistAssistant from '../components/StrategistAssistant';
+import PulseWidget from '../components/PulseWidget';
 import { useActiveProject } from '../context/ActiveProjectContext';
 import { eventsAPI, plannerAPI } from '../services/api';
 
@@ -30,6 +31,8 @@ const Planner = () => {
   const [showAssistant, setShowAssistant] = useState(false);
   const [batchMode, setBatchMode] = useState('strategy'); // 'strategy' | 'production'
   const [generatingSignals, setGeneratingSignals] = useState(false);
+  const [pulse, setPulse] = useState(null);
+  const [pulseLoading, setPulseLoading] = useState(false);
 
   const loadEvents = useCallback(async () => {
     if (!activeBandId) return;
@@ -52,14 +55,27 @@ const Planner = () => {
     }
   }, [activeBandId]);
 
+  const loadPulse = useCallback(async () => {
+    if (!activeBandId) return;
+    setPulseLoading(true);
+    try {
+      const res = await plannerAPI.pulse(activeBandId);
+      setPulse(res.data);
+    } catch (err) {
+      console.error('Pulse fetch failed', err);
+    } finally {
+      setPulseLoading(false);
+    }
+  }, [activeBandId]);
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      await Promise.all([loadEvents(), loadLatestBatch()]);
+      await Promise.all([loadEvents(), loadLatestBatch(), loadPulse()]);
       setLoading(false);
     };
     init();
-  }, [loadEvents, loadLatestBatch]);
+  }, [loadEvents, loadLatestBatch, loadPulse]);
 
   const handleAddEvent = async (form) => {
     try {
@@ -117,6 +133,8 @@ const Planner = () => {
   };
 
   const handleRejectPost = (postId) => {
+    // Fire-and-forget learning trigger — concept rejection feeds the ADN loop
+    plannerAPI.rejectConcept(postId, activeBandId).catch(() => {});
     setBatch(b => ({
       ...b,
       posts: b.posts.filter(p => p.id !== postId),
@@ -161,6 +179,9 @@ const Planner = () => {
   return (
     <Layout title="Strategic Planner" subtitle="Agencia de Contenido Autónoma">
       <div className="max-w-6xl space-y-8 pb-24 animate-in fade-in slide-in-from-bottom-4 duration-700">
+
+        {/* ── Pulse Telemetry ── */}
+        <PulseWidget pulse={pulse} loading={pulseLoading} />
 
         {/* ── Control Bar ── */}
         <div className="flex flex-wrap items-center justify-between gap-4">
