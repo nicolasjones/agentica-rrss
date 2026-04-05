@@ -29,7 +29,7 @@ const PlatformConnectModal = ({ onConnect, onClose, connectedKeys = [] }) => {
       style={{ background: 'rgba(0,0,0,0.75)' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-[var(--surface-low)] border border-[var(--outline-variant)] w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-300">
+      <div className="bg-[var(--surface-low)] border border-[var(--outline-variant)] w-full max-w-md">
         {/* Header */}
         <div className="px-6 py-4 border-b border-[var(--outline-variant)] flex items-center justify-between">
           <div>

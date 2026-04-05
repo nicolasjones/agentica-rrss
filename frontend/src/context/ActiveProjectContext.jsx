@@ -8,9 +8,11 @@ export const ActiveProjectProvider = ({ children }) => {
     return (saved && saved !== 'null' && saved !== 'undefined') ? saved : null;
   });
 
+  // selectProject now returns the ID so we can use it immediately if needed
   const selectProject = (id) => {
-    localStorage.setItem('active_band_id', id);
-    setActiveBandId(id);
+    const stringId = String(id);
+    localStorage.setItem('active_band_id', stringId);
+    setActiveBandId(stringId);
   };
 
   const clearProject = () => {
@@ -18,8 +20,11 @@ export const ActiveProjectProvider = ({ children }) => {
     setActiveBandId(null);
   };
 
+  // We expose a derived ID that is more robust than just the state
+  const currentId = activeBandId || localStorage.getItem('active_band_id');
+
   return (
-    <ActiveProjectContext.Provider value={{ activeBandId, selectProject, clearProject }}>
+    <ActiveProjectContext.Provider value={{ activeBandId: currentId, selectProject, clearProject }}>
       {children}
     </ActiveProjectContext.Provider>
   );

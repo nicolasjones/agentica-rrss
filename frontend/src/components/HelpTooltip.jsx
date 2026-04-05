@@ -25,7 +25,7 @@ const HelpTooltip = ({ message, position = 'top' }) => {
       />
       
       {show && (
-        <div className={`absolute ${positionClasses[position]} z-[100] w-48 p-3 bg-[var(--surface-high)] border border-[var(--outline-variant)] shadow-2xl rounded-sm animate-in fade-in zoom-in duration-200 pointer-events-none`}>
+        <div className={`absolute ${positionClasses[position]} z-[100] w-48 p-3 bg-[var(--surface-high)] border border-[var(--outline-variant)] shadow-2xl rounded-sm pointer-events-none`}>
           <div className="text-[10px] font-mono text-gray-300 leading-relaxed uppercase tracking-tighter">
             <span className="text-[var(--primary)] font-black block mb-1">IA Insights:</span>
             {message}

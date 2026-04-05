@@ -28,7 +28,7 @@ const EventList = ({ events = [], onAdd, onDelete }) => {
       </div>
 
       {isAdding && (
-        <form onSubmit={handleSubmit} className="border border-[var(--outline-variant)] p-4 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+        <form onSubmit={handleSubmit} className="border border-[var(--outline-variant)] p-4 space-y-4">
           <div className="space-y-1">
             <label className="text-[9px] font-mono font-black text-gray-600 uppercase">Título del Evento</label>
             <input

@@ -85,10 +85,11 @@ def _infer_archetype(concept_title: str) -> str:
 class BaseAIPlanner(ABC):
 
     @abstractmethod
-    async def generate_batch(self, band, events: list, timeframe: str) -> list[dict]:
+    async def generate_batch(self, band, events: list, timeframe: str, volume: int = 5) -> list[dict]:
         """
         Phase 1 — MAPA: Return proposed concept dicts.
         Each dict: { event_id, platform, concept_title, narrative_goal, caption=None, hashtags, scheduled_date }
+        volume: target number of posts to generate (default 5).
         """
 
     @abstractmethod
@@ -108,7 +109,7 @@ class BaseAIPlanner(ABC):
 class MockAIPlanner(BaseAIPlanner):
     """Deterministic mock for dev/test. No API key required."""
 
-    async def generate_batch(self, band, events: list, timeframe: str) -> list[dict]:
+    async def generate_batch(self, band, events: list, timeframe: str, volume: int = 5) -> list[dict]:
         await self._simulate_latency()
         today = date.today()
         days = {"weekly": 7, "biweekly": 14, "monthly": 30}.get(timeframe, 7)
@@ -134,9 +135,9 @@ class MockAIPlanner(BaseAIPlanner):
                     "scheduled_date": event.event_date,
                 })
 
-        # Neutral filler slots
+        # Neutral filler slots — fill up to `volume` total posts
         neutral_arch = CONCEPT_ARCHETYPES["neutral"]
-        neutral_count = max(0, (days // 3) - len(posts))
+        neutral_count = max(0, volume - len(posts))
         for i in range(neutral_count):
             platform = PLATFORMS[i % len(PLATFORMS)]
             scheduled = today + timedelta(days=random.randint(1, days))
@@ -173,9 +174,10 @@ class MockAIPlanner(BaseAIPlanner):
 
     async def refine_post(self, band, original_caption: str, platform: str, feedback: str) -> dict:
         await self._simulate_latency()
+        platform_tag = f"#{platform.capitalize()}" if platform else "#Refined"
         return {
             "caption": f"[Refinado: {feedback[:40]}...] {original_caption}",
-            "hashtags": [f"#{band.name.replace(' ', '')}", "#Refined"],
+            "hashtags": [f"#{band.name.replace(' ', '')}", platform_tag],
         }
 
     async def _simulate_latency(self):
@@ -215,7 +217,7 @@ Sin texto adicional fuera del JSON."""
             f"Modismos locales: {'Sí' if band.use_regional_slang else 'No'}"
         )
 
-    async def generate_batch(self, band, events: list, timeframe: str) -> list[dict]:
+    async def generate_batch(self, band, events: list, timeframe: str, volume: int = 5) -> list[dict]:
         today = date.today()
         events_text = "\n".join(
             f"- [{e.id}] {e.title} ({e.category}) — {e.event_date}" for e in events
@@ -223,8 +225,9 @@ Sin texto adicional fuera del JSON."""
         prompt = (
             f"{self._band_context(band)}\n\n"
             f"TIMEFRAME: {timeframe} (desde {today})\n"
+            f"VOLUMEN OBJETIVO: {volume} posts\n"
             f"EVENTOS:\n{events_text}\n\n"
-            "Genera conceptos estratégicos para el periodo. Mix de plataformas: instagram, facebook, tiktok, youtube."
+            f"Genera exactamente {volume} conceptos estratégicos para el periodo. Mix de plataformas: instagram, facebook, tiktok, youtube."
         )
         raw = await self._call_llm(self.SYSTEM_CONCEPTS, prompt)
         parsed = self._parse_json_list(raw)
@@ -284,6 +287,22 @@ Sin texto adicional fuera del JSON."""
         except json.JSONDecodeError:
             start, end = raw.find("["), raw.rfind("]") + 1
             return json.loads(raw[start:end]) if start != -1 else []
+
+
+# ─── Volume → Timeframe mapping ────────────────────────
+
+def volume_to_timeframe(volume: int) -> str:
+    """
+    Map a numeric post volume to a BatchTimeframe string for DB storage.
+    5  → weekly  (7-day horizon)
+    10 → biweekly (14-day horizon)
+    15+ → monthly (30-day horizon)
+    """
+    if volume <= 5:
+        return "weekly"
+    elif volume <= 10:
+        return "biweekly"
+    return "monthly"
 
 
 # ─── Factory ───────────────────────────────────────────

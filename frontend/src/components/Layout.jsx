@@ -127,8 +127,8 @@ const Layout = () => {
       </aside>
 
       {/* ── Main Canvas ── */}
-      <main className={`flex-1 ml-64 p-12 overflow-y-auto transition-all duration-500 ${drawerOpen ? 'mr-96' : 'mr-0'}`}>
-        <header className="mb-16 animate-in fade-in slide-in-from-top-4 duration-700">
+      <main className={`flex-1 ml-64 p-12 overflow-y-auto transition-[margin-right] duration-300 ${drawerOpen ? 'mr-96' : 'mr-0'}`}>
+        <header className="mb-16">
           {subtitle && (
             <div className="label-tech flex items-center gap-2 text-[var(--primary)] mb-2">
               <Cpu size={12} className="animate-pulse" />
@@ -138,8 +138,8 @@ const Layout = () => {
           <h1 className="text-5xl font-display font-black tracking-tighter text-white uppercase italic leading-none">{title}</h1>
         </header>
 
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
-          <Outlet />
+        <div className="">
+          <Outlet key={activeBandId} />
         </div>
       </main>
 

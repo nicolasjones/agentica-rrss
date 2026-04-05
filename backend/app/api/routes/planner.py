@@ -19,7 +19,7 @@ from app.schemas.schemas import (
     ManualDraftCreate, StrategicPostRead, StrategicPostUpdate,
 )
 from app.core.security import get_current_user_id
-from app.services.ai.ai_planner import get_ai_planner
+from app.services.ai.ai_planner import get_ai_planner, volume_to_timeframe
 
 router = APIRouter(prefix="/planner", tags=["Planner"])
 
@@ -64,7 +64,7 @@ async def list_batches(
 @router.get("/generate", response_model=StrategicBatchRead)
 async def generate_batch(
     band_id: int,
-    timeframe: str = "weekly",
+    volume: int = 5,
     user_id: int = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
@@ -72,7 +72,12 @@ async def generate_batch(
     Phase 1 — MAPA: Trigger the Strategist Agent.
     Creates a StrategicBatch with concept posts (concept_title + narrative_goal).
     caption is NULL at this stage — the user reviews and approves concepts first.
+    volume: number of posts to generate (5, 10, or 15).
     """
+    if volume < 1 or volume > 50:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=422, detail="volume must be between 1 and 50")
+
     band = await _assert_band_owner(band_id, user_id, db)
 
     events_result = await db.execute(
@@ -82,8 +87,9 @@ async def generate_batch(
     )
     events = events_result.scalars().all()
 
+    timeframe = volume_to_timeframe(volume)
     planner = get_ai_planner()
-    proposed = await planner.generate_batch(band=band, events=events, timeframe=timeframe)
+    proposed = await planner.generate_batch(band=band, events=events, timeframe=timeframe, volume=volume)
 
     batch = StrategicBatch(band_id=band_id, timeframe=timeframe, status=BatchStatus.PROPOSED)
     db.add(batch)

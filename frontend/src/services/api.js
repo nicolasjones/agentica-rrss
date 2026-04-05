@@ -106,6 +106,7 @@ export const campaignsAPI = {
 export const eventsAPI = {
   list: (bandId) => api.get('/events/', { params: { band_id: bandId } }),
   create: (bandId, data) => api.post(`/events/?band_id=${bandId}`, data),
+  update: (eventId, data) => api.patch(`/events/${eventId}`, data),
   delete: (eventId) => api.delete(`/events/${eventId}`),
   interpret: (text, bandName, bandId) =>
     api.post(`/events/interpret?band_id=${bandId}`, { message: text, band_name: bandName }),
@@ -115,9 +116,10 @@ export const eventsAPI = {
 
 export const plannerAPI = {
   listBatches: (bandId) => api.get('/planner/batches', { params: { band_id: bandId } }),
-  generate: (bandId, timeframe = 'weekly') =>
-    api.get('/planner/generate', { params: { band_id: bandId, timeframe } }),
-  generateSignals: (batchId, bandId) => api.post(`/planner/generate-signals?batch_id=${batchId}&band_id=${bandId}`),
+  generate: (bandId, volume = 5) =>
+    api.get('/planner/generate', { params: { band_id: bandId, volume } }),
+  generateSignals: (batchId, bandId, approvedIds = []) =>
+    api.post(`/planner/generate-signals?batch_id=${batchId}&band_id=${bandId}`, { approved_ids: approvedIds }),
   approveBatch: (batchId) => api.post(`/planner/approve-batch?batch_id=${batchId}`),
   refinePost: (bandId, postId, feedback) =>
     api.post(`/planner/refine-post?band_id=${bandId}`, { post_id: postId, feedback }),

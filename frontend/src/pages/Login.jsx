@@ -38,7 +38,7 @@ const Login = () => {
       <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-[var(--primary)]/10 blur-[120px] rounded-full -ml-80 -mt-80" />
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[var(--secondary)]/5 blur-[120px] rounded-full -mr-64 -mb-64" />
 
-      <div className="w-full max-w-md relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-16">
           <div className="w-20 h-20 bg-[var(--primary)] rounded-sm flex items-center justify-center mx-auto mb-8 shadow-[0_0_50px_rgba(204,151,255,0.2)] border border-white/10 group overflow-hidden relative">
             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform" />

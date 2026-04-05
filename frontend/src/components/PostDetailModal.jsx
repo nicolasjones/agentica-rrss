@@ -61,7 +61,7 @@ const PostDetailModal = ({ post, initialDate, onSave, onDelete, onClose }) => {
       onClick={handleOverlayClick}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
     >
-      <div className="surface-card w-full max-w-[520px] flex flex-col gap-0 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
+      <div className="surface-card w-full max-w-[520px] flex flex-col gap-0 overflow-hidden">
 
         {/* Header */}
         <div className="flex items-start gap-3 p-5 border-b border-[var(--outline-variant)]">

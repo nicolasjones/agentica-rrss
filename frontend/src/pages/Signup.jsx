@@ -44,7 +44,7 @@ const Signup = () => {
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[var(--primary)]/10 blur-[120px] rounded-full -mr-80 -mt-80" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[var(--secondary)]/5 blur-[120px] rounded-full -ml-64 -mb-64" />
 
-      <div className="w-full max-w-md relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-16">
           <div className="w-20 h-20 bg-[var(--surface-high)] border border-[var(--outline-variant)] rounded-sm flex items-center justify-center mx-auto mb-8 shadow-inner group overflow-hidden relative">
             <div className="absolute inset-x-0 bottom-0 h-1 bg-[var(--primary)] animate-pulse" />

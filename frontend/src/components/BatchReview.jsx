@@ -123,7 +123,7 @@ const SignalCard = ({ post, onApprove, onReject, onRefine }) => {
 
       {/* Refine panel */}
       {showRefine && (
-        <div className="px-4 pb-4 space-y-2 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="px-4 pb-4 space-y-2">
           <input
             type="text"
             value={feedback}
@@ -272,7 +272,7 @@ const BatchReview = ({
 
       {/* Posts grid */}
       {!collapsed && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {selectedDay && (
             <div className="col-span-full text-[8px] font-mono font-black text-[var(--secondary)] uppercase tracking-widest px-1 pb-1">
               Filtrando: {selectedDay.year}-{String(selectedDay.month + 1).padStart(2, '0')}-{String(selectedDay.day).padStart(2, '0')} · {visiblePosts.length} posts
