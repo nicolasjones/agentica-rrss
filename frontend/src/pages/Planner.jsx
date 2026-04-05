@@ -256,7 +256,7 @@ const Planner = () => {
       >
         {generating
           ? <><RefreshCw size={12} className="animate-spin" /> Generando...</>
-          : <><Brain size={12} /> {batch ? 'Re-Generar Batch' : 'Generar Batch'}</>
+          : <><Brain size={12} /> Generar Ideas</>
         }
       </button>
     );
@@ -339,16 +339,18 @@ const Planner = () => {
           {/* Right: tools */}
           <div className="flex flex-wrap items-center gap-3">
             <PlatformSelector selected={selectedPlatforms} onChange={setSelectedPlatforms} />
-            <select
-              data-testid="volume-selector"
-              value={volume}
-              onChange={e => setVolume(Number(e.target.value))}
-              className="bg-[var(--surface-highest)] border border-[var(--outline-variant)] p-2 text-[9px] font-mono font-black text-white uppercase outline-none focus:border-[var(--secondary)]"
-            >
-              {VOLUMES.map(v => (
-                <option key={v.key} value={v.key}>{v.label}</option>
-              ))}
-            </select>
+            {!isSignalMode && (
+              <select
+                data-testid="volume-selector"
+                value={volume}
+                onChange={e => setVolume(Number(e.target.value))}
+                className="bg-[var(--surface-highest)] border border-[var(--outline-variant)] p-2 text-[9px] font-mono font-black text-white uppercase outline-none focus:border-[var(--secondary)]"
+              >
+                {VOLUMES.map(v => (
+                  <option key={v.key} value={v.key}>{v.label}</option>
+                ))}
+              </select>
+            )}
             {renderGenerateButton()}
           </div>
         </div>

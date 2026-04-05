@@ -161,6 +161,58 @@ test.describe('Post Lab — Idea → Signal Pipeline', () => {
     await expect(signalRows.first()).toBeVisible({ timeout: 10000 });
   });
 
+  // ── Control Refinement: Dynamic button labels ─────────────────────────────
+
+  test('CR-01: Generate button says "Generar Ideas" in MAPA mode', async ({ page }) => {
+    await page.click('[data-testid="hub-mode-mapa"]');
+    const btn = page.locator('[data-testid="generate-btn"]');
+    await expect(btn).toContainText('Generar Ideas');
+  });
+
+  test('CR-02: Volume selector is visible in MAPA mode', async ({ page }) => {
+    await page.click('[data-testid="hub-mode-mapa"]');
+    await expect(page.locator('[data-testid="volume-selector"]')).toBeVisible();
+  });
+
+  test('CR-03: Volume selector is hidden in SEÑAL mode', async ({ page }) => {
+    await page.click('[data-testid="hub-mode-senal"]');
+    await expect(page.locator('[data-testid="volume-selector"]')).not.toBeVisible();
+  });
+
+  test('CR-04: Generate button says "Generar Señales (N)" in SEÑAL mode with batch', async ({ page }) => {
+    // Generate a batch first
+    await page.click('[data-testid="hub-mode-mapa"]');
+    await page.locator('[data-testid="generate-btn"]').click();
+    await page.waitForSelector('[data-testid="generate-btn"]:not([disabled])', { timeout: 30000 });
+
+    // Switch to SEÑAL
+    await page.click('[data-testid="hub-mode-senal"]');
+
+    const btn = page.locator('[data-testid="generate-btn"]');
+    await expect(btn).toContainText('Generar Señales');
+  });
+
+  test('CR-05: Generar Señales button shows correct count after approving concepts', async ({ page }) => {
+    // Generate batch
+    await page.click('[data-testid="hub-mode-mapa"]');
+    await page.locator('[data-testid="generate-btn"]').click();
+    await page.waitForSelector('[data-testid="generate-btn"]:not([disabled])', { timeout: 30000 });
+
+    // Approve 2 concepts
+    await page.click('[data-testid="view-list"]');
+    const rows = page.locator('[data-testid="concept-row"]');
+    for (let i = 0; i < 2; i++) {
+      const row = rows.nth(i);
+      await row.hover();
+      await row.locator('[data-testid="approve-btn"]').click();
+    }
+
+    // Switch to SEÑAL and verify count in button
+    await page.click('[data-testid="hub-mode-senal"]');
+    const btn = page.locator('[data-testid="generate-btn"]');
+    await expect(btn).toContainText('Generar Señales (2)');
+  });
+
   // ── DnD (T11 via E2E) ─────────────────────────────────────────────────────
 
   test('T11-E2E: Dragging a concept to a new calendar cell updates its date', async ({ page }) => {
