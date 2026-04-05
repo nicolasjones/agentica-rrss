@@ -108,8 +108,6 @@ services:
     container_name: agenmatica_frontend
     ports:
       - "8090:80"
-    environment:
-      - VITE_API_URL=http://localhost:8005/api/v1
     depends_on:
       - backend-api
     volumes:

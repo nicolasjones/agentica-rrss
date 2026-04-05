@@ -217,27 +217,31 @@ const Planner = () => {
   const hasSignals = batch?.posts?.some(p => p.caption);
 
   const renderGenerateButton = () => {
-    if (hubMode === 'production' && batch && hasSignals) {
+    // Si estamos en PRODUCCIÓN (Pestaña Señal)
+    if (hubMode === 'production') {
+      // Caso 1: Ya hay señales generadas (listo para publicar)
+      if (batch && hasSignals) {
+        return (
+          <button
+            data-testid="generate-btn"
+            onClick={() => handleApproveBatch(batch.id)}
+            disabled={approvedCount === 0 || approving}
+            className="btn-secondary py-2 px-6 text-xs flex items-center gap-2 disabled:opacity-50"
+          >
+            {approving
+              ? <><RefreshCw size={12} className="animate-spin" /> Publicando...</>
+              : <><Check size={12} /> Publicar ({approvedCount}/{totalCount})</>
+            }
+          </button>
+        );
+      }
+      
+      // Caso 2: Tenemos ideas pero no señales aún
       return (
         <button
           data-testid="generate-btn"
-          onClick={() => handleApproveBatch(batch.id)}
-          disabled={approvedCount === 0 || approving}
-          className="btn-secondary py-2 px-6 text-xs flex items-center gap-2 disabled:opacity-50"
-        >
-          {approving
-            ? <><RefreshCw size={12} className="animate-spin" /> Publicando...</>
-            : <><Check size={12} /> Publicar ({approvedCount}/{totalCount})</>
-          }
-        </button>
-      );
-    }
-    if (hubMode === 'production' && batch && !hasSignals) {
-      return (
-        <button
-          data-testid="generate-btn"
-          onClick={() => handleGenerateSignals(batch.id)}
-          disabled={approvedCount === 0 || generatingSignals}
+          onClick={() => batch ? handleGenerateSignals(batch.id) : null}
+          disabled={approvedCount === 0 || generatingSignals || !batch}
           className="btn-secondary py-2 px-6 text-xs flex items-center gap-2 disabled:opacity-50"
         >
           {generatingSignals
@@ -247,6 +251,8 @@ const Planner = () => {
         </button>
       );
     }
+
+    // Por defecto: Modo ESTRATEGIA (Pestaña Mapa)
     return (
       <button
         data-testid="generate-btn"
@@ -256,7 +262,7 @@ const Planner = () => {
       >
         {generating
           ? <><RefreshCw size={12} className="animate-spin" /> Generando...</>
-          : <><Brain size={12} /> Generar Ideas</>
+          : <><Brain size={12} /> {batch ? 'Re-Generar Ideas' : 'Generar Ideas'}</>
         }
       </button>
     );
@@ -339,7 +345,8 @@ const Planner = () => {
           {/* Right: tools */}
           <div className="flex flex-wrap items-center gap-3">
             <PlatformSelector selected={selectedPlatforms} onChange={setSelectedPlatforms} />
-            {!isSignalMode && (
+            {/* Selector de Volumen (Solo en Mapa) */}
+            {hubMode === 'strategy' && (
               <select
                 data-testid="volume-selector"
                 value={volume}
@@ -351,7 +358,35 @@ const Planner = () => {
                 ))}
               </select>
             )}
-            {renderGenerateButton()}
+
+            {/* El Botón Dinámico Inyectado */}
+            {hubMode === 'production' ? (
+              <button
+                data-testid="generate-btn"
+                onClick={() => (batch && hasSignals) ? handleApproveBatch(batch.id) : (batch ? handleGenerateSignals(batch.id) : null)}
+                disabled={approvedCount === 0 || generatingSignals || approving || !batch}
+                className="btn-secondary py-2 px-6 text-xs flex items-center gap-2 disabled:opacity-50"
+              >
+                {approving || generatingSignals
+                  ? <><RefreshCw size={12} className="animate-spin" /> Procesando...</>
+                  : hasSignals
+                    ? <><Check size={12} /> Publicar ({approvedCount}/{totalCount})</>
+                    : <><Zap size={12} /> Generar Señales ({approvedCount})</>
+                }
+              </button>
+            ) : (
+              <button
+                data-testid="generate-btn"
+                onClick={handleGenerate}
+                disabled={generating}
+                className="btn-primary py-2 px-6 text-xs flex items-center gap-2 disabled:opacity-50"
+              >
+                {generating
+                  ? <><RefreshCw size={12} className="animate-spin" /> Generando...</>
+                  : <><Brain size={12} /> Generar Ideas</>
+                }
+              </button>
+            )}
           </div>
         </div>
       </div>

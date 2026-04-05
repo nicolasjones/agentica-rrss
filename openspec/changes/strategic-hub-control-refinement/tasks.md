@@ -10,9 +10,9 @@
 3.  **[x] Action Dispatching (Planner.jsx)**:
     *   Ensure the `handleGenerate` call uses the current `volume` state.
     *   Ensure the "Generar Señales" button is disabled if `approvedCount === 0`.
-4.  **[x] Testing and Validation (QA)**:
-    *   Created `frontend/src/tests/StrategicHubControls.test.jsx` — 19 unit tests (all passing).
-    *   Updated `frontend/e2e/post-lab-idea-to-signal.spec.js` — 5 E2E scenarios (CR-01 to CR-05).
-    *   Added vitest + @testing-library/react to devDependencies.
-5.  **[x] GitHub Push**:
-    *   Committed with message: `feat: strategic-hub-control-refinement — Semantic UX + Semantic Controls`.
+5.  **[x] Testing and Validation (QA)**:
+    *   Verify that approving a post immediately updates the button counter.
+    *   Verify that switching views (Mapa vs Señal) hides/shows the volume selector correctly.
+6.  **[x] GitHub Push**:
+    *   Add spec files and modifications to Git.
+    *   Push with commit message: `strategic-hub-control-refinement: Semantic UX + Semantic Controls`.
