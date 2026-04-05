@@ -17,8 +17,8 @@ import {
   Activity
 } from 'lucide-react';
 import { analyticsAPI, bandsAPI } from '../services/api';
-import Layout from '../components/Layout';
 import { useActiveProject } from '../context/ActiveProjectContext';
+import { useHeader } from '../context/HeaderContext';
 
 const MetricCard = ({ icon, label, value, change, colorClass }) => (
   <div className="surface-card p-8 group border-b border-b-[var(--outline-variant)]">
@@ -49,18 +49,20 @@ const PlatformIcon = ({ type }) => {
 
 const Analytics = () => {
   const { activeBandId } = useActiveProject();
+  const { updateHeader } = useHeader();
   const [analytics, setAnalytics] = useState(null);
   const [bandName, setBandName] = useState('');
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!activeBandId) {
-      navigate('/projects');
-      return;
-    }
+    if (!activeBandId) { navigate('/projects'); return; }
     loadData();
   }, [activeBandId]);
+
+  useEffect(() => {
+    if (bandName) updateHeader('Analytics', `Ecosistema: ${bandName}`);
+  }, [bandName]);
 
   const loadData = async () => {
     try {
@@ -91,11 +93,7 @@ const Analytics = () => {
   const platforms = analytics?.platform_breakdown || [];
 
   return (
-    <Layout 
-      title="Analytics" 
-      subtitle={`Ecosistema: ${bandName}`}
-    >
-      <div className="max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-12">
+    <div className="max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-12">
         {/* Main Hub Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <MetricCard 
@@ -227,7 +225,6 @@ const Analytics = () => {
           </div>
         </div>
       </div>
-    </Layout>
   );
 };
 

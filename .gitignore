@@ -10,6 +10,7 @@ venv/
 
 # Node
 node_modules/
+node_modules_old/
 frontend/dist/
 
 # Environment

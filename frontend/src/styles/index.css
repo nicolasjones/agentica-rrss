@@ -103,3 +103,39 @@
     @apply text-[var(--on-surface-variant)] text-[10px] font-mono font-black uppercase tracking-[0.2em] mb-1 block;
   }
 }
+
+/* ── Dual Range Slider ── */
+input[type="range"].dual-range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  pointer-events: none;
+  height: 0;
+}
+input[type="range"].dual-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: all;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 10px var(--primary);
+  cursor: pointer;
+  border: 2px solid var(--surface-low);
+  margin-top: -6px;
+}
+input[type="range"].dual-range::-moz-range-thumb {
+  pointer-events: all;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 10px var(--primary);
+  cursor: pointer;
+  border: 2px solid var(--surface-low);
+}
+input[type="range"].dual-range::-webkit-slider-runnable-track {
+  height: 2px;
+  background: transparent;
+}

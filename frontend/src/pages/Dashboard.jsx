@@ -23,8 +23,8 @@ import {
   ResponsiveContainer 
 } from 'recharts';
 import { bandsAPI, analyticsAPI } from '../services/api';
-import Layout from '../components/Layout';
 import { useActiveProject } from '../context/ActiveProjectContext';
+import { useHeader } from '../context/HeaderContext';
 
 const StatCard = ({ icon, label, value, trend, colorClass }) => (
   <div className="surface-card p-6 group">
@@ -51,6 +51,7 @@ const StatCard = ({ icon, label, value, trend, colorClass }) => (
 
 const Dashboard = () => {
   const { activeBandId } = useActiveProject();
+  const { updateHeader } = useHeader();
   const [band, setBand] = useState(null);
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -68,12 +69,13 @@ const Dashboard = () => {
   ];
 
   useEffect(() => {
-    if (!activeBandId) {
-      navigate('/projects');
-      return;
-    }
+    if (!activeBandId) { navigate('/projects'); return; }
     loadData();
   }, [activeBandId]);
+
+  useEffect(() => {
+    if (band?.name) updateHeader('Dashboard', `Ecosistema: ${band.name}`);
+  }, [band?.name]);
 
   const loadData = async () => {
     try {
@@ -103,11 +105,7 @@ const Dashboard = () => {
   }
 
   return (
-    <Layout 
-      title="Dashboard" 
-      subtitle={`Ecosistema: ${band?.name}`}
-    >
-      <div className="max-w-7xl space-y-8">
+    <div className="max-w-7xl space-y-8">
         {/* Identity Header Card - Asymmetric Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
           <div className="lg:col-span-3 surface-card-high flex flex-col md:flex-row items-center gap-10">
@@ -271,7 +269,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-    </Layout>
   );
 };
 

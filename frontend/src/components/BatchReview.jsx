@@ -182,6 +182,7 @@ const SignalCard = ({ post, onApprove, onReject, onRefine }) => {
 const BatchReview = ({
   batch,
   mode = 'strategy',
+  selectedDay = null,
   onApprovePost,
   onRejectPost,
   onRefinePost,
@@ -194,8 +195,24 @@ const BatchReview = ({
 
   if (!batch) return null;
 
-  const approved = batch.posts?.filter(p => p.is_approved).length ?? 0;
-  const total = batch.posts?.length ?? 0;
+  const allPosts = batch.posts ?? [];
+
+  const visiblePosts = selectedDay
+    ? allPosts.filter(p => {
+        if (!p.scheduled_date) return false;
+        const d = new Date(p.scheduled_date + 'T00:00:00');
+        return (
+          d.getFullYear() === selectedDay.year &&
+          d.getMonth() === selectedDay.month &&
+          d.getDate() === selectedDay.day
+        );
+      })
+    : allPosts;
+
+  const filteredBatch = { ...batch, posts: visiblePosts };
+
+  const approved = allPosts.filter(p => p.is_approved).length;
+  const total = allPosts.length;
 
   const isStrategy = mode === 'strategy';
 
@@ -256,7 +273,12 @@ const BatchReview = ({
       {/* Posts grid */}
       {!collapsed && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
-          {batch.posts?.map(post =>
+          {selectedDay && (
+            <div className="col-span-full text-[8px] font-mono font-black text-[var(--secondary)] uppercase tracking-widest px-1 pb-1">
+              Filtrando: {selectedDay.year}-{String(selectedDay.month + 1).padStart(2, '0')}-{String(selectedDay.day).padStart(2, '0')} · {visiblePosts.length} posts
+            </div>
+          )}
+          {filteredBatch.posts?.map(post =>
             isStrategy ? (
               <ConceptCard
                 key={post.id}

@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Zap, Calendar, List, RefreshCw, Brain, MessageSquare, Map } from 'lucide-react';
-import Layout from '../components/Layout';
+import { Zap, Calendar, List, RefreshCw, Brain, Map } from 'lucide-react';
 import CalendarView from '../components/CalendarView';
 import EventList from '../components/EventList';
 import BatchReview from '../components/BatchReview';
 import PlatformSelector from '../components/PlatformSelector';
-import StrategistAssistant from '../components/StrategistAssistant';
 import PulseWidget from '../components/PulseWidget';
 import PostDetailModal from '../components/PostDetailModal';
 import EventQuickAdd from '../components/EventQuickAdd';
 import { useActiveProject } from '../context/ActiveProjectContext';
+import { useHeader } from '../context/HeaderContext';
 import { eventsAPI, plannerAPI } from '../services/api';
 
 const TIMEFRAMES = [
@@ -20,6 +19,7 @@ const TIMEFRAMES = [
 
 const Planner = () => {
   const { activeBandId } = useActiveProject();
+  const { updateHeader } = useHeader();
 
   const [events, setEvents] = useState([]);
   const [batch, setBatch] = useState(null);
@@ -30,14 +30,18 @@ const Planner = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedPlatforms, setSelectedPlatforms] = useState(['instagram', 'facebook', 'tiktok', 'youtube']);
-  const [showAssistant, setShowAssistant] = useState(false);
   const [batchMode, setBatchMode] = useState('strategy');
   const [generatingSignals, setGeneratingSignals] = useState(false);
   const [pulse, setPulse] = useState(null);
   const [pulseLoading, setPulseLoading] = useState(false);
   const [modalState, setModalState] = useState({ open: false, post: null, date: null });
+  const [selectedDay, setSelectedDay] = useState(null);
 
   const bandName = batch?.band?.name || '';
+
+  useEffect(() => {
+    updateHeader('Temporal Canvas', 'Planificador Estratégico');
+  }, []);
 
   const loadEvents = useCallback(async () => {
     if (!activeBandId) return;
@@ -81,6 +85,12 @@ const Planner = () => {
     };
     init();
   }, [loadEvents, loadLatestBatch, loadPulse]);
+
+  useEffect(() => {
+    const handler = () => loadEvents();
+    window.addEventListener('agenmatica:eventsCreated', handler);
+    return () => window.removeEventListener('agenmatica:eventsCreated', handler);
+  }, [loadEvents]);
 
   const handleAddEvent = async (form) => {
     try {
@@ -215,7 +225,7 @@ const Planner = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--surface)] flex items-center justify-center p-12">
+      <div className="min-h-[500px] flex items-center justify-center p-12">
         <div className="w-full max-w-sm h-1 bg-white/5 relative overflow-hidden">
           <div className="absolute inset-y-0 bg-[var(--secondary)] animate-[slide_1.2s_infinite]" style={{ width: '40%' }} />
         </div>
@@ -224,151 +234,132 @@ const Planner = () => {
   }
 
   return (
-    <Layout title="Strategic Planner" subtitle="Agencia de Contenido Autónoma">
-      <div className="max-w-6xl space-y-8 pb-24 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="max-w-6xl space-y-8 pb-24 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-        {/* ── Pulse Telemetry ── */}
-        <PulseWidget pulse={pulse} loading={pulseLoading} />
+      {/* ── Pulse Telemetry ── */}
+      <PulseWidget pulse={pulse} loading={pulseLoading} />
 
-        {/* ── Control Bar ── */}
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex border border-[var(--outline-variant)] rounded-sm overflow-hidden">
-            <button
-              onClick={() => setView('calendar')}
-              className={`flex items-center gap-2 px-4 py-2 text-[9px] font-mono font-black uppercase tracking-widest transition-all
-                ${view === 'calendar' ? 'bg-[var(--secondary)]/20 text-[var(--secondary)]' : 'text-gray-500 hover:text-gray-300'}`}
-            >
-              <Calendar size={12} /> Calendario
-            </button>
-            <button
-              onClick={() => setView('list')}
-              className={`flex items-center gap-2 px-4 py-2 text-[9px] font-mono font-black uppercase tracking-widest transition-all
-                ${view === 'list' ? 'bg-[var(--secondary)]/20 text-[var(--secondary)]' : 'text-gray-500 hover:text-gray-300'}`}
-            >
-              <List size={12} /> Lista
-            </button>
-          </div>
-
-          {batch && (
-            <div className="flex border border-[var(--outline-variant)] rounded-sm overflow-hidden">
-              <button
-                onClick={() => setBatchMode('strategy')}
-                className={`flex items-center gap-2 px-4 py-2 text-[9px] font-mono font-black uppercase tracking-widest transition-all
-                  ${batchMode === 'strategy' ? 'bg-[var(--secondary)]/20 text-[var(--secondary)]' : 'text-gray-500 hover:text-gray-300'}`}
-              >
-                <Map size={12} /> Mapa
-              </button>
-              <button
-                onClick={() => setBatchMode('production')}
-                className={`flex items-center gap-2 px-4 py-2 text-[9px] font-mono font-black uppercase tracking-widest transition-all
-                  ${batchMode === 'production' ? 'bg-[var(--primary)]/20 text-[var(--primary)]' : 'text-gray-500 hover:text-gray-300'}`}
-              >
-                <Zap size={12} /> Señal
-              </button>
-            </div>
-          )}
-
-          <div className="flex flex-wrap items-center gap-3">
-            <EventQuickAdd
-              bandId={activeBandId}
-              bandName={bandName}
-              onEventsCreated={loadEvents}
-            />
-
-            <PlatformSelector selected={selectedPlatforms} onChange={setSelectedPlatforms} />
-
-            <select
-              value={timeframe}
-              onChange={e => setTimeframe(e.target.value)}
-              className="bg-[var(--surface-highest)] border border-[var(--outline-variant)] p-2 text-[9px] font-mono font-black text-white uppercase outline-none focus:border-[var(--secondary)] rounded-sm"
-            >
-              {TIMEFRAMES.map(t => (
-                <option key={t.key} value={t.key}>{t.label}</option>
-              ))}
-            </select>
-
-            <button
-              onClick={() => setShowAssistant(v => !v)}
-              className={`flex items-center gap-2 px-4 py-2 text-[9px] font-mono font-black uppercase tracking-widest border transition-all
-                ${showAssistant
-                  ? 'border-[var(--secondary)]/60 bg-[var(--secondary)]/10 text-[var(--secondary)]'
-                  : 'border-[var(--outline-variant)] text-gray-500 hover:text-gray-300'}`}
-            >
-              <MessageSquare size={12} /> Asistente
-            </button>
-
-            <button
-              onClick={handleGenerate}
-              disabled={generating}
-              className="btn-secondary py-2 px-6 text-xs flex items-center gap-2 disabled:opacity-50"
-            >
-              {generating
-                ? <><RefreshCw size={12} className="animate-spin" /> Generando...</>
-                : <><Brain size={12} /> Generar Batch</>
-              }
-            </button>
-          </div>
+      {/* ── Control Bar ── */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="flex border border-[var(--outline-variant)] rounded-sm overflow-hidden">
+          <button
+            onClick={() => setView('calendar')}
+            className={`flex items-center gap-2 px-4 py-2 text-[9px] font-mono font-black uppercase tracking-widest transition-all
+              ${view === 'calendar' ? 'bg-[var(--secondary)]/20 text-[var(--secondary)]' : 'text-gray-500 hover:text-gray-300'}`}
+          >
+            <Calendar size={12} /> Calendario
+          </button>
+          <button
+            onClick={() => setView('list')}
+            className={`flex items-center gap-2 px-4 py-2 text-[9px] font-mono font-black uppercase tracking-widest transition-all
+              ${view === 'list' ? 'bg-[var(--secondary)]/20 text-[var(--secondary)]' : 'text-gray-500 hover:text-gray-300'}`}
+          >
+            <List size={12} /> Lista
+          </button>
         </div>
 
-        {error && (
-          <div className="surface-card p-4 border-l-2 border-l-red-500 text-red-400 text-xs font-mono">
-            {error}
+        {batch && (
+          <div className="flex border border-[var(--outline-variant)] rounded-sm overflow-hidden">
+            <button
+              onClick={() => setBatchMode('strategy')}
+              className={`flex items-center gap-2 px-4 py-2 text-[9px] font-mono font-black uppercase tracking-widest transition-all
+                ${batchMode === 'strategy' ? 'bg-[var(--secondary)]/20 text-[var(--secondary)]' : 'text-gray-500 hover:text-gray-300'}`}
+            >
+              <Map size={12} /> Mapa
+            </button>
+            <button
+              onClick={() => setBatchMode('production')}
+              className={`flex items-center gap-2 px-4 py-2 text-[9px] font-mono font-black uppercase tracking-widest transition-all
+                ${batchMode === 'production' ? 'bg-[var(--primary)]/20 text-[var(--primary)]' : 'text-gray-500 hover:text-gray-300'}`}
+            >
+              <Zap size={12} /> Señal
+            </button>
           </div>
         )}
 
-        {/* ── Main Grid ── */}
-        <div className={`grid grid-cols-1 gap-8 ${showAssistant ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
+        <div className="flex flex-wrap items-center gap-3">
+          <EventQuickAdd
+            bandId={activeBandId}
+            bandName={bandName}
+            onEventsCreated={loadEvents}
+          />
+          <PlatformSelector selected={selectedPlatforms} onChange={setSelectedPlatforms} />
+          <select
+            value={timeframe}
+            onChange={e => setTimeframe(e.target.value)}
+            className="bg-[var(--surface-highest)] border border-[var(--outline-variant)] p-2 text-[9px] font-mono font-black text-white uppercase outline-none focus:border-[var(--secondary)] rounded-sm"
+          >
+            {TIMEFRAMES.map(t => (
+              <option key={t.key} value={t.key}>{t.label}</option>
+            ))}
+          </select>
+          <button
+            onClick={handleGenerate}
+            disabled={generating}
+            className="btn-secondary py-2 px-6 text-xs flex items-center gap-2 disabled:opacity-50"
+          >
+            {generating
+              ? <><RefreshCw size={12} className="animate-spin" /> Generando...</>
+              : <><Brain size={12} /> Generar Batch</>
+            }
+          </button>
+        </div>
+      </div>
 
-          <div className="lg:col-span-1 space-y-6">
-            {view === 'calendar' && (
-              <CalendarView
-                events={events}
-                posts={batch?.posts || []}
-                mode={batchMode}
-                onPostClick={(post) => handleOpenModal(post, null)}
-                onAddPost={(date) => handleOpenModal(null, date)}
-              />
-            )}
+      {error && (
+        <div className="surface-card p-4 border-l-2 border-l-red-500 text-red-400 text-xs font-mono">
+          {error}
+        </div>
+      )}
+
+      {/* ── Main Grid: Big Calendar + Sidebar ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="lg:col-span-3 space-y-6">
+          {view === 'calendar' && (
+            <CalendarView
+              events={events}
+              posts={batch?.posts || []}
+              mode={batchMode}
+              onDayClick={(day) => setSelectedDay(prev =>
+                prev && prev.year === day.year && prev.month === day.month && prev.day === day.day
+                  ? null : day
+              )}
+              onPostClick={(post) => handleOpenModal(post, null)}
+              onAddPost={(date) => handleOpenModal(null, date)}
+            />
+          )}
+          {view === 'list' && (
             <EventList
               events={events}
               onAdd={handleAddEvent}
               onDelete={handleDeleteEvent}
             />
-          </div>
-
-          <div className={showAssistant ? 'lg:col-span-2' : 'lg:col-span-2'}>
-            {batch ? (
-              <BatchReview
-                batch={batch}
-                mode={batchMode}
-                onApprovePost={handleApprovePost}
-                onRejectPost={handleRejectPost}
-                onRefinePost={handleRefinePost}
-                onGenerateSignals={handleGenerateSignals}
-                onApproveBatch={handleApproveBatch}
-                approving={approving}
-                generatingSignals={generatingSignals}
-              />
-            ) : (
-              <div className="surface-card p-12 flex flex-col items-center justify-center text-center space-y-4 h-full min-h-[300px]">
-                <Zap size={40} className="text-[var(--secondary)] opacity-40" />
-                <p className="text-[10px] font-mono font-black text-gray-600 uppercase tracking-widest max-w-xs">
-                  Agrega eventos y presiona "Generar Batch" para que el Strategist Agent proponga un plan de contenido.
-                </p>
-              </div>
-            )}
-          </div>
-
-          {showAssistant && (
-            <div className="lg:col-span-1 animate-in fade-in slide-in-from-right-4 duration-300">
-              <StrategistAssistant
-                bandId={activeBandId}
-                onEventsCreated={loadEvents}
-              />
-            </div>
           )}
         </div>
 
+        <div className="lg:col-span-1 space-y-6">
+          {batch ? (
+            <BatchReview
+              batch={batch}
+              mode={batchMode}
+              selectedDay={selectedDay}
+              onApprovePost={handleApprovePost}
+              onRejectPost={handleRejectPost}
+              onRefinePost={handleRefinePost}
+              onGenerateSignals={handleGenerateSignals}
+              onApproveBatch={handleApproveBatch}
+              approving={approving}
+              generatingSignals={generatingSignals}
+            />
+          ) : (
+            <div className="surface-card p-8 flex flex-col items-center justify-center text-center space-y-4 min-h-[300px]">
+              <Zap size={32} className="text-[var(--secondary)] opacity-40" />
+              <p className="text-[10px] font-mono font-black text-gray-600 uppercase tracking-widest leading-relaxed">
+                Agrega eventos y "Generar Batch" para que el Strategist Agent proponga un plan.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       {modalState.open && (
@@ -380,7 +371,7 @@ const Planner = () => {
           onClose={handleCloseModal}
         />
       )}
-    </Layout>
+    </div>
   );
 };
 

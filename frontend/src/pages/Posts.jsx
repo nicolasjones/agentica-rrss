@@ -13,8 +13,8 @@ import {
   Activity
 } from 'lucide-react';
 import { postsAPI } from '../services/api';
-import Layout from '../components/Layout';
 import { useActiveProject } from '../context/ActiveProjectContext';
+import { useHeader } from '../context/HeaderContext';
 
 const PostCard = ({ post, onApprove, onEdit, onReject }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -130,15 +130,17 @@ const Posts = () => {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const { activeBandId } = useActiveProject();
+  const { updateHeader } = useHeader();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!activeBandId) {
-      navigate('/projects');
-      return;
-    }
+    if (!activeBandId) { navigate('/projects'); return; }
     loadData();
   }, [activeBandId]);
+
+  useEffect(() => {
+    if (summary?.bandName) updateHeader('Post Lab', `Ecosistema Activo: ${summary.bandName}`);
+  }, [summary?.bandName]);
 
   const loadData = async () => {
     try {
@@ -189,11 +191,7 @@ const Posts = () => {
   }
 
   return (
-    <Layout 
-      title="Post Lab" 
-      subtitle={`Ecosistema Activo: ${summary?.bandName}`}
-    >
-      <div className="max-w-5xl space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="max-w-5xl space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
         {/* Header Stats Bar */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
            <div className="surface-card p-8 flex items-center justify-between">
@@ -264,7 +262,6 @@ const Posts = () => {
            </p>
         </div>
       </div>
-    </Layout>
   );
 };
 

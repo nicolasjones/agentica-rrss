@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { useActiveProject } from '../context/ActiveProjectContext';
 import { bandsAPI, membersAPI } from '../services/api';
-import Layout from '../components/Layout';
+import { useHeader } from '../context/HeaderContext';
 
 const MemberCard = ({ name, role, status, progress }) => (
   <div className="surface-card flex flex-col p-0 group">
@@ -63,6 +63,7 @@ const MemberCard = ({ name, role, status, progress }) => (
 
 const CreativeLab = () => {
   const { activeBandId } = useActiveProject();
+  const { updateHeader } = useHeader();
   const [band, setBand] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -71,10 +72,12 @@ const CreativeLab = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (activeBandId) {
-      loadData();
-    }
+    if (activeBandId) loadData();
   }, [activeBandId]);
+
+  useEffect(() => {
+    if (band?.name) updateHeader('Creative Lab', `Ecosistema: ${band.name}`);
+  }, [band?.name]);
 
   const loadData = async () => {
     try {
@@ -125,11 +128,7 @@ const CreativeLab = () => {
   }
 
   return (
-    <Layout 
-      title="Creative Lab" 
-      subtitle={`Ecosistema: ${band?.name}`}
-    >
-      <div className="max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-1000 space-y-12">
+    <div className="max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-1000 space-y-12">
         {/* Obsidian Hero Area - Asymmetric Header */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3 surface-card p-12 flex flex-col md:flex-row items-center gap-12 border-t-4 border-t-[var(--primary)] bg-gradient-to-tr from-[var(--surface-dim)] to-black">
@@ -301,7 +300,6 @@ const CreativeLab = () => {
           </div>
         )}
       </div>
-    </Layout>
   );
 };
 

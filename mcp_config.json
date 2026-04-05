@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "claude-oauth": {
+      "command": "claude",
+      "args": ["mcp", "serve", "--transport", "stdio", "--auth", "oauth"],
+      "env": { "CLAUDE_USE_OAUTH": "true" }
+    },
+    "claude-teams": {
+      "command": "claude",
+      "args": [
+        "teams",
+        "serve",
+        "--lead", "sonnet-4-5",
+        "--teammates", "haiku-code-review,haiku-research,opus-architect"
+      ],
+      "env": { "CLAUDE_USE_OAUTH": "true" }
+    },
+    "openspec": {
+      "command": "openspec",
+      "args": ["mcp-serve"]
+    }
+  }
+}

@@ -26,8 +26,12 @@ import {
   Youtube
 } from 'lucide-react';
 import { bandsAPI, networksAPI } from '../services/api';
-import Layout from '../components/Layout';
 import { useActiveProject } from '../context/ActiveProjectContext';
+import { useHeader } from '../context/HeaderContext';
+import HelpTooltip from '../components/HelpTooltip';
+import DualRangeSlider from '../components/DualRangeSlider';
+import PlatformConnectModal from '../components/PlatformConnectModal';
+import { GEO, COUNTRIES } from '../constants/GeoData';
 
 // ─── Constants ────────────────────────────────────────
 const TONE_OPTIONS = ['Sarcástico', 'Energético', 'Crudo', 'Poético', 'Provocador', 'Íntimo', 'Épico', 'Oscuro', 'Visceral', 'Anti-corporativo'];
@@ -49,7 +53,7 @@ const MAX_GENRES = 10;
 
 // ─── Sub-components ───────────────────────────────────
 
-const TagSelector = ({ label, options, selected = [], onChange, isEditing }) => {
+const TagSelector = ({ label, options, selected = [], onChange, isEditing, help }) => {
   const [customInput, setCustomInput] = useState('');
   const toggle = (tag) => {
     if (!isEditing) return;
@@ -72,7 +76,10 @@ const TagSelector = ({ label, options, selected = [], onChange, isEditing }) => 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <span className="text-[10px] font-mono font-black text-gray-600 uppercase tracking-widest">{label}</span>
+        <div className="flex items-center">
+          <span className="text-[10px] font-mono font-black text-gray-600 uppercase tracking-widest">{label}</span>
+          {help && <HelpTooltip message={help} />}
+        </div>
         <span className={`text-[10px] font-mono font-black tracking-widest ${selected.length >= MAX_TAGS ? 'text-[var(--secondary)]' : 'text-gray-700'}`}>
           {selected.length}/{MAX_TAGS}
         </span>
@@ -174,12 +181,14 @@ const NetworkCard = ({ network, onConnect, onScan, onDisconnect }) => {
 
 const Profile = () => {
   const { activeBandId } = useActiveProject();
+  const { updateHeader } = useHeader();
   const [band, setBand] = useState(null);
   const [networks, setNetworks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState('identity'); // identity, engine, networks
+  const [activeTab, setActiveTab] = useState('identity');
+  const [showConnectModal, setShowConnectModal] = useState(false);
 
   const loadData = useCallback(async () => {
     if (!activeBandId) return;
@@ -200,14 +209,20 @@ const Profile = () => {
 
   useEffect(() => { loadData(); }, [loadData]);
 
+  useEffect(() => {
+    if (band?.name) updateHeader('ADN Profile', `Ecosistema: ${band.name}`);
+  }, [band?.name]);
+
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
     setSaving(true);
     try {
-      const { name, genre, role, audience_age_range, audience_location, tone_keywords, values_keywords, auto_publish, posts_per_day } = band;
+      const { name, genre, role, audience_age_min, audience_age_max, audience_country, audience_province, use_regional_slang, tone_keywords, values_keywords, auto_publish, posts_per_day } = band;
       const genreArr = Array.isArray(genre) ? genre : (genre ? genre.split(',').map(s => s.trim()).filter(Boolean) : []);
       await bandsAPI.update(activeBandId, {
-        name, genre: genreArr.join(', '), audience_age_range, audience_location,
+        name, genre: genreArr.join(', '), role,
+        audience_age_min, audience_age_max,
+        audience_country, audience_province, use_regional_slang,
         tone_keywords, values_keywords, auto_publish, posts_per_day,
       });
       setIsEditing(false);
@@ -231,7 +246,7 @@ const Profile = () => {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-[var(--surface)] flex items-center justify-center">
+    <div className="min-h-[500px] flex items-center justify-center">
       <div className="w-48 h-1 bg-white/5 relative overflow-hidden">
         <div className="absolute inset-y-0 bg-[var(--primary)] animate-[slide_1.5s_infinite]" style={{ width: '40%' }} />
       </div>
@@ -239,8 +254,7 @@ const Profile = () => {
   );
 
   return (
-    <Layout title="ADN Profile" subtitle={`Ecosistema: ${band?.name}`}>
-      <div className="max-w-5xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+    <div className="max-w-5xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
         
         {/* ── Header Card ── */}
         <div className="surface-card p-8 flex items-center justify-between border-t-2 border-t-[var(--primary)]">
@@ -264,7 +278,7 @@ const Profile = () => {
         {/* ── Tabs Navigation ── */}
         <div className="flex items-center gap-2 border-b border-[var(--outline-variant)]">
           {[
-            { id: 'identity', label: 'Identidad Artística', icon: <User size={14} /> },
+            { id: 'identity', label: 'Identidad Artística', icon: <Users size={14} /> },
             { id: 'engine',   label: 'Motor de IA',        icon: <Zap size={14} /> },
             { id: 'networks', label: 'Nodos de Señal',     icon: <Globe size={14} /> }
           ].map(tab => (
@@ -323,15 +337,48 @@ const Profile = () => {
                       <div className="space-y-4">
                         <label className="text-[10px] font-mono font-black text-gray-600 uppercase tracking-widest flex items-center gap-2">
                           <MapPin size={12} /> Territorio Mainstream
+                          <HelpTooltip text="País y región que define los modismos, trends y canales prioritarios." />
                         </label>
-                        <input
-                          type="text"
-                          value={band?.audience_location || ''}
-                          onChange={e => setBand({ ...band, audience_location: e.target.value })}
-                          disabled={!isEditing}
-                          placeholder="ej: Argentina"
-                          className="w-full bg-transparent border-b border-[var(--outline-variant)] py-2 text-xl font-display font-black text-white italic outline-none focus:border-[var(--primary)] disabled:opacity-50"
-                        />
+                        {isEditing ? (
+                          <div className="space-y-2">
+                            <select
+                              value={band?.audience_country || ''}
+                              onChange={e => setBand({ ...band, audience_country: e.target.value, audience_province: '' })}
+                              className="w-full bg-[var(--surface-highest)] p-2 text-[11px] font-mono font-black text-white uppercase border border-[var(--outline-variant)] focus:border-[var(--primary)] outline-none"
+                            >
+                              <option value="">País...</option>
+                              {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                            </select>
+                            <select
+                              value={band?.audience_province || ''}
+                              onChange={e => setBand({ ...band, audience_province: e.target.value })}
+                              disabled={!band?.audience_country}
+                              className="w-full bg-[var(--surface-highest)] p-2 text-[11px] font-mono font-black text-white uppercase border border-[var(--outline-variant)] focus:border-[var(--primary)] outline-none disabled:opacity-30"
+                            >
+                              <option value="">Provincia / Estado...</option>
+                              {(GEO[band?.audience_country] || []).map(p => <option key={p} value={p}>{p}</option>)}
+                            </select>
+                            <div className="flex items-center justify-between pt-1">
+                              <span className="text-[9px] font-mono text-gray-600 uppercase tracking-widest">Regional Slang</span>
+                              <button
+                                type="button"
+                                onClick={() => setBand({ ...band, use_regional_slang: !band.use_regional_slang })}
+                                className={`text-[8px] font-mono font-black uppercase px-3 py-1 border transition-all ${band?.use_regional_slang ? 'border-[var(--secondary)]/50 bg-[var(--secondary)]/10 text-[var(--secondary)]' : 'border-[var(--outline-variant)] text-gray-600'}`}
+                              >
+                                {band?.use_regional_slang ? 'Active' : 'Inactive'}
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <p className="text-xl font-display font-black text-white uppercase italic">
+                              {band?.audience_country || '—'}{band?.audience_province ? ` / ${band.audience_province}` : ''}
+                            </p>
+                            <span className={`text-[8px] font-mono font-black uppercase mt-1 inline-block px-2 py-0.5 ${band?.use_regional_slang ? 'text-[var(--secondary)] bg-[var(--secondary)]/10' : 'text-gray-700'}`}>
+                              Regional Slang: {band?.use_regional_slang ? 'Active' : 'Off'}
+                            </span>
+                          </div>
+                        )}
                       </div>
                    </div>
                 </div>
@@ -368,14 +415,11 @@ const Profile = () => {
               <div className="space-y-6">
                 <div className="surface-card p-8 bg-black border border-[var(--outline-variant)]">
                   <Users size={24} className="text-[var(--primary)] mb-4" />
-                  <p className="text-[10px] font-mono font-black text-gray-600 uppercase tracking-widest">Rango de Edad Target</p>
-                  <input
-                    type="text"
-                    value={band?.audience_age_range || ''}
-                    onChange={e => setBand({ ...band, audience_age_range: e.target.value })}
+                  <p className="text-[10px] font-mono font-black text-gray-600 uppercase tracking-widest mb-4">Rango de Edad Target</p>
+                  <DualRangeSlider
+                    value={[band?.audience_age_min || 18, band?.audience_age_max || 35]}
+                    onChange={([min, max]) => setBand({ ...band, audience_age_min: min, audience_age_max: max })}
                     disabled={!isEditing}
-                    placeholder="ej: 18-35"
-                    className="bg-transparent border-none text-2xl font-display font-black text-white italic outline-none w-full mt-2"
                   />
                   <p className="text-[8px] font-mono text-gray-700 uppercase mt-4">IA utiliza esto para calibrar modismos y canales.</p>
                 </div>
@@ -389,6 +433,7 @@ const Profile = () => {
               <div className="surface-card p-8 border-l-2 border-l-[var(--primary)]">
                 <TagSelector
                   label="Tono de Voz (Contextual)"
+                  help="Define la actitud de la IA al redactar. Elige hasta 3 para dar personalidad única."
                   options={TONE_OPTIONS}
                   selected={band?.tone_keywords || []}
                   onChange={val => setBand({ ...band, tone_keywords: val })}
@@ -398,6 +443,7 @@ const Profile = () => {
               <div className="surface-card p-8 border-l-2 border-l-[var(--secondary)]">
                 <TagSelector
                   label="Valores & Estética Core"
+                  help="Estos conceptos guían el propósito y la visualidad de las señales generadas."
                   options={VALUES_OPTIONS}
                   selected={band?.values_keywords || []}
                   onChange={val => setBand({ ...band, values_keywords: val })}
@@ -409,7 +455,10 @@ const Profile = () => {
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div className="flex items-center justify-between p-6 border border-[var(--outline-variant)] bg-white/5">
                       <div>
-                        <h4 className="text-xs font-mono font-black text-white uppercase tracking-widest">Auto-Publicar Signals</h4>
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-xs font-mono font-black text-white uppercase tracking-widest">Auto-Publicar Signals</h4>
+                          <HelpTooltip message="Si se activa, los posts aprobados se inyectarán en las redes automáticamente según tu horario." />
+                        </div>
                         <p className="text-[9px] font-mono text-gray-600 uppercase mt-1">Requiere aprobación manual de batch</p>
                       </div>
                       <button
@@ -422,7 +471,10 @@ const Profile = () => {
 
                     <div className="p-6 border border-[var(--outline-variant)] bg-white/5 space-y-4">
                       <div className="flex items-center justify-between">
-                         <h4 className="text-xs font-mono font-black text-white uppercase tracking-widest">Carga Semántica Diaria</h4>
+                         <div className="flex items-center gap-2">
+                           <h4 className="text-xs font-mono font-black text-white uppercase tracking-widest">Carga Semántica Diaria</h4>
+                           <HelpTooltip message="Define cuántas propuestas estratégicas generará el Agente cada 24 horas." />
+                         </div>
                          <span className="text-2xl font-display font-black text-[var(--primary)] italic">{band?.posts_per_day || 5}</span>
                       </div>
                       <input
@@ -430,7 +482,7 @@ const Profile = () => {
                         value={band?.posts_per_day || 5}
                         onChange={e => isEditing && setBand({ ...band, posts_per_day: parseInt(e.target.value) })}
                         disabled={!isEditing}
-                        className="w-full accent-[var(--primary)] opacity-80"
+                        className="w-full accent-[var(--primary)] opacity-80 cursor-pointer"
                       />
                       <p className="text-[8px] font-mono text-gray-700 uppercase">Cantidad de posts/señales propuestas por el agente cada 24hs.</p>
                     </div>
@@ -469,7 +521,10 @@ const Profile = () => {
                   ))
                 )}
                 {/* Add new node placeholder */}
-                <div className="surface-card border-dashed border-2 border-[var(--outline-variant)] flex flex-col items-center justify-center p-8 opacity-40 hover:opacity-100 hover:border-[var(--primary)] transition-all cursor-pointer">
+                <div
+                  onClick={() => setShowConnectModal(true)}
+                  className="surface-card border-dashed border-2 border-[var(--outline-variant)] flex flex-col items-center justify-center p-8 opacity-40 hover:opacity-100 hover:border-[var(--primary)] transition-all cursor-pointer"
+                >
                    <Plus size={24} className="mb-2" />
                    <span className="text-[9px] font-mono font-black uppercase tracking-widest">Deploy New Node</span>
                 </div>
@@ -491,8 +546,14 @@ const Profile = () => {
            </div>
         </div>
 
+      {showConnectModal && (
+        <PlatformConnectModal
+          onConnect={handleConnect}
+          onClose={() => setShowConnectModal(false)}
+          connectedKeys={networks.map(n => n.platform?.toLowerCase())}
+        />
+      )}
       </div>
-    </Layout>
   );
 };
 
