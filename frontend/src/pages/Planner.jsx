@@ -365,7 +365,7 @@ const Planner = () => {
                 data-testid="generate-btn"
                 onClick={() => (batch && hasSignals) ? handleApproveBatch(batch.id) : (batch ? handleGenerateSignals(batch.id) : null)}
                 disabled={approvedCount === 0 || generatingSignals || approving || !batch}
-                className="btn-secondary py-2 px-6 text-xs flex items-center gap-2 disabled:opacity-50"
+                className="btn-primary py-2 px-6 text-xs flex items-center gap-2 disabled:opacity-50"
               >
                 {approving || generatingSignals
                   ? <><RefreshCw size={12} className="animate-spin" /> Procesando...</>
@@ -379,7 +379,7 @@ const Planner = () => {
                 data-testid="generate-btn"
                 onClick={handleGenerate}
                 disabled={generating}
-                className="btn-primary py-2 px-6 text-xs flex items-center gap-2 disabled:opacity-50"
+                className="btn-secondary py-2 px-6 text-xs flex items-center gap-2 disabled:opacity-50"
               >
                 {generating
                   ? <><RefreshCw size={12} className="animate-spin" /> Generando...</>
